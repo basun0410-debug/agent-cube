@@ -1,0 +1,1040 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>요원 큐브의 iPad 학생용</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 한 대의 iPad 화면. 잠금 → 전화 → 홈 → 미션 앱 → 마무리 전화로 전환되는 단일 화면 앱 */
+:root{
+  color-scheme:dark;
+  --night:#14162e; --night2:#22254a; --glass:rgba(255,255,255,.1); --line:rgba(255,255,255,.22);
+  --paper:#f2f3fb; --card:#ffffff; --ink:#1b1d3a; --muted:#5b5f85; --rule:#d8daeb;
+  --cuboid:#6657e8; --cuboid-soft:#e5e2ff; --cube:#e8416f; --cube-soft:#ffe0e8; --other:#5a6078; --other-soft:#e6e8f0;
+  --gold:#ffc83d; --ok:#108a5b; --ok-soft:#d9f5e8; --bad:#c23b22; --bad-soft:#fde6e0;
+  --display:"Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--night);color:#fff;font-family:var(--body);font-size:18px;line-height:1.5;word-break:keep-all;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+#ipad{position:relative;height:100%;overflow:hidden;
+  background:
+   linear-gradient(30deg,rgba(255,255,255,.035) 12%,transparent 12.5%,transparent 87%,rgba(255,255,255,.035) 87.5%),
+   linear-gradient(150deg,rgba(255,255,255,.035) 12%,transparent 12.5%,transparent 87%,rgba(255,255,255,.035) 87.5%),
+   var(--night);
+  background-size:80px 140px}
+.status{position:absolute;inset:0 0 auto;height:34px;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.status.on-paper{color:var(--ink)}
+.status .right{display:flex;align-items:center;gap:10px}
+.tbtn{font-size:13px;padding:2px 10px;border:1px solid currentColor;border-radius:99px;opacity:.75}
+.batt{display:inline-block;width:24px;height:12px;border:1.5px solid currentColor;border-radius:3px;padding:1px}
+.batt i{display:block;height:100%;background:currentColor;border-radius:1px}
+.scr{position:absolute;inset:0;overflow-y:auto;padding-top:42px;padding-bottom:20px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));animation:fade .3s ease}
+@keyframes fade{from{opacity:.2}to{opacity:1}}
+.leaving{animation:slideup .55s ease forwards}
+@keyframes slideup{to{transform:translateY(-100%)}}
+
+/* 잠금화면 */
+#lock{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(20px,4vw,56px);align-items:center;max-width:1180px;margin-inline:auto;right:0}
+.lockside{min-width:0}
+.owner{display:flex;align-items:center;gap:8px;font-weight:500;opacity:.85}
+.date{font-size:clamp(20px,2.6vw,28px);font-weight:500;margin-top:12px}
+.clock{font-family:var(--display);font-size:clamp(76px,13vw,150px);line-height:1;font-variant-numeric:tabular-nums;color:#fff}
+.code-wrap{margin-top:22px}
+.code-label{font-size:19px;font-weight:500}
+[hidden]{display:none!important}
+.code{display:flex;gap:10px;margin-top:8px}
+.code span{width:24px;height:24px;border:2px solid #fff;border-radius:50%;background:transparent}
+.code span.on{background:var(--gold);border-color:var(--gold);animation:pop .3s}
+@keyframes pop{50%{transform:scale(1.12)}}
+.quiz{background:var(--paper);color:var(--ink);border-radius:20px;padding:clamp(18px,2.6vw,30px);min-width:0}
+.eyebrow{font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--muted)}
+.quiz h2{font-size:clamp(21px,2.5vw,27px);line-height:1.35;margin-top:6px;font-weight:700;text-wrap:balance}
+.qopts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.qopts.text{grid-template-columns:1fr}
+.qopt{background:var(--card);border:2px solid var(--rule);border-radius:14px;padding:10px;min-height:58px;font-weight:500;color:var(--ink);display:grid;place-items:center;text-align:center}
+.qopt svg{width:100%;max-width:150px;height:auto;display:block}
+.qopt:hover{border-color:var(--cuboid)}
+.qopt.right{border-color:var(--ok);background:var(--ok-soft)}
+.qopt.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.msg{min-height:50px;margin-top:12px;font-size:17px;color:var(--muted)}
+.msg.ok{color:var(--ok);font-weight:700}.msg.no{color:var(--bad);font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:10px 24px;border-radius:14px;font-weight:700;background:var(--ink);color:#fff}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.btn.ghost{background:transparent;border:2px solid var(--rule);color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* 전화 */
+#ring,#call{display:flex;flex-direction:column;align-items:center;background:radial-gradient(circle at 50% 30%,#3a3478,var(--night) 70%)}
+#ring{justify-content:center;gap:10px;text-align:center}
+#ring .who{font-family:var(--display);font-size:clamp(36px,6vw,58px);line-height:1.15}
+#ring .sub{opacity:.85}
+.avatar{width:clamp(130px,24vh,210px);animation:ringbob 1s ease-in-out infinite}
+@keyframes ringbob{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.callbtns{display:flex;gap:clamp(48px,10vw,110px);margin-top:26px}
+.callbtn{display:grid;justify-items:center;gap:6px;color:#fff;font-size:16px}
+.callbtn i{width:76px;height:76px;border-radius:50%;display:grid;place-items:center}
+.callbtn svg{width:34px;height:34px;fill:#fff}
+.accept i{background:#22b463;animation:pulse 1s infinite}.decline i{background:#e23d3d}
+.decline svg{transform:rotate(135deg)}
+@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(34,180,99,.25)}}
+#call{justify-content:center}
+.callgrid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(18px,4vw,50px);align-items:center;max-width:1100px;width:100%}
+.video{background:#0d0e20;border:1px solid var(--line);border-radius:22px;padding:18px;display:grid;justify-items:center;position:relative}
+.video svg{width:min(100%,250px);height:auto}
+.live{position:absolute;left:14px;top:12px;font-size:13px;font-weight:700;color:#ff8ba5}
+.callname{font-weight:700;margin-top:6px}.calltime{font-size:14px;opacity:.75;font-variant-numeric:tabular-nums}
+.speech{min-width:0}
+.speech p{font-size:clamp(24px,3.3vw,36px);line-height:1.45;font-weight:500;min-height:5.6em;text-wrap:pretty}
+.speech p b{color:var(--gold);font-weight:700}
+.speechbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.dots{display:flex;gap:6px;margin-right:auto}.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--gold)}
+.btn.line{background:transparent;border:2px solid var(--line);color:#fff}
+.talk .mouth{animation:talk .28s infinite alternate;transform-origin:100px 146px}
+@keyframes talk{to{transform:scaleY(2.4)}}
+
+/* 홈 */
+#home{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(18px,3vw,40px);align-content:center;max-width:1180px;margin-inline:auto;right:0}
+.order{background:var(--paper);color:var(--ink);border-radius:22px;padding:clamp(20px,2.6vw,30px);min-width:0;position:relative;overflow:hidden}
+.stamp{display:inline-block;font-family:var(--display);font-size:18px;color:var(--cube);border:3px solid var(--cube);padding:1px 12px;border-radius:6px;transform:rotate(-4deg)}
+.order h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,3.8vw,44px);line-height:1.2;margin-top:14px;text-wrap:balance}
+.order h1 .c1{color:var(--cuboid)}.order h1 .c2{color:var(--cube)}
+.order .meta{margin-top:14px;font-size:16px;color:var(--muted)}
+.progress{display:flex;gap:6px;margin-top:18px}.progress i{height:10px;flex:1;background:var(--rule);border-radius:5px}.progress i.on{background:var(--ok)}
+.apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px);min-width:0}
+.app{display:grid;justify-items:center;gap:8px;color:#fff;font-weight:500;font-size:17px;text-align:center;position:relative}
+.app .ic{width:min(100%,128px);aspect-ratio:1;border-radius:24%;display:grid;place-items:center;background:var(--c);position:relative;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.app .ic svg{width:64%;height:64%}
+.app .no{position:absolute;left:7px;top:7px;min-width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:rgba(15,16,40,.72);font-family:var(--display);font-size:16px;color:#fff}
+.app.locked{opacity:.42;cursor:not-allowed}
+.app.next .ic{outline:4px solid var(--gold);outline-offset:3px;animation:glow 1.4s infinite}
+@keyframes glow{50%{outline-color:transparent}}
+.app .done{position:absolute;right:-6px;top:-6px;width:32px;height:32px;border-radius:50%;background:var(--ok);display:grid;place-items:center;font-weight:700;border:3px solid var(--night)}
+.banner{position:absolute;z-index:40;top:40px;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 32px));display:flex;gap:12px;align-items:center;background:#fff;color:var(--ink);border-radius:18px;padding:10px 16px;box-shadow:0 12px 34px rgba(0,0,0,.4);animation:drop .35s}
+@keyframes drop{from{transform:translate(-50%,-120%)}}
+.banner svg{width:46px;flex:none}
+.banner b{display:block}.banner span{font-size:15px;color:var(--muted)}
+
+/* 미션 앱 공통 */
+.mission{background:var(--paper);color:var(--ink)}
+.mhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;max-width:1180px;margin-inline:auto}
+.back{min-height:44px;padding:0 14px 0 8px;font-weight:700;color:var(--cuboid)}
+.tag{font-family:var(--display);color:var(--cube);font-size:18px}
+.mhead h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,36px);line-height:1.2}
+.brief{display:flex;gap:12px;align-items:center;max-width:1180px;margin:10px auto 14px;background:var(--ink);color:#fff;border-radius:16px;padding:10px 16px}
+.brief svg{width:48px;flex:none}
+.brief p{font-size:clamp(17px,1.9vw,20px);line-height:1.4;min-width:0}
+.brief b{color:var(--gold)}
+.mbody{max-width:1180px;margin-inline:auto;display:grid;gap:16px}
+.two{grid-template-columns:minmax(0,6fr) minmax(0,5fr);align-items:start}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:clamp(12px,1.6vw,20px);min-width:0}
+.panel h3{font-size:18px;font-weight:700}
+.stage{touch-action:none;width:100%;display:block;height:290px;cursor:grab;user-select:none;-webkit-user-select:none}
+.hint{font-size:15px;color:var(--muted);text-align:center}
+.thumbs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:10px}
+.thumb{border:2px solid var(--rule);background:var(--paper);border-radius:12px;padding:2px;display:grid;justify-items:center;font-weight:700;color:var(--ink);position:relative}
+.thumb svg{width:100%;height:auto;aspect-ratio:1}
+.thumb.sel{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.thumb.t-rect{background:var(--cuboid-soft);border-color:var(--cuboid)}
+.thumb.t-square{background:var(--cube-soft);border-color:var(--cube)}
+.thumb.t-other{background:var(--other-soft);border-color:var(--other)}
+.bins{display:grid;gap:10px;margin-top:12px}
+.bin{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:66px;text-align:left;padding:10px 16px;border-radius:14px;font-weight:700;font-size:clamp(17px,1.9vw,20px);color:var(--ink);border:2px solid}
+.bin small{font-weight:500;font-size:15px;white-space:nowrap}
+.bin.rect{background:var(--cuboid-soft);border-color:var(--cuboid)}
+.bin.square{background:var(--cube-soft);border-color:var(--cube)}
+.bin.other{background:var(--other-soft);border-color:var(--other)}
+.defs{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.def{border-radius:16px;padding:14px 18px}
+.def.a{background:var(--cuboid-soft)}.def.b{background:var(--cube-soft)}
+.def b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(25px,3vw,32px)}
+.def.a b{color:var(--cuboid)}.def.b b{color:var(--cube)}
+.foot{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;max-width:1180px;margin:16px auto 0}
+.objs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.obj{display:grid;gap:6px;justify-items:center;padding:10px}
+.obj svg{height:clamp(84px,17vh,130px);width:auto;max-width:100%}
+.obj .nm{font-weight:700}
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+.tri button{min-height:46px;border-radius:10px;font-weight:700;font-size:15px;line-height:1.2;padding:4px 2px;background:var(--paper);border:2px solid var(--rule);color:var(--ink)}
+.tri .pick-rect{background:var(--cuboid);border-color:var(--cuboid);color:#fff}
+.tri .pick-square{background:var(--cube);border-color:var(--cube);color:#fff}
+.tri .pick-other{background:var(--other);border-color:var(--other);color:#fff}
+.tri .bad{background:var(--bad-soft);border-color:var(--bad);animation:shake .35s}
+.objmsg{font-size:15px;color:var(--muted);min-height:2.9em;text-align:center}
+.objmsg.no{color:var(--bad)}.objmsg.ok{color:var(--ok);font-weight:700}
+.seg{display:flex;gap:6px;background:var(--paper);padding:4px;border-radius:12px}
+.seg button{flex:1;min-height:44px;border-radius:9px;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--ink);color:#fff}
+.term{margin-top:10px;font-size:18px;min-height:3em}
+.term b{color:var(--cube)}
+table{color:inherit;font:inherit;border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;margin-top:10px}
+th,td{border:1px solid var(--rule);padding:8px 6px;text-align:center}
+th{font-size:15px;background:var(--paper)}
+td.num{font-family:var(--display);font-size:24px}
+td.done{background:var(--ok-soft);color:var(--ok)}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.rowbtns .btn{min-height:44px;padding:6px 14px;font-size:16px}
+.make{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.make div{border-radius:14px;padding:14px;background:var(--paper)}
+.make svg{width:100%;max-height:150px}
+.cards{display:grid;gap:10px}
+.fact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,330px);gap:12px;align-items:center}
+.fact p{font-weight:500;font-size:clamp(18px,2vw,21px)}
+.form{display:grid;gap:12px}
+.form label{display:grid;gap:4px;font-weight:700;font-size:16px}
+.form input,.form select{min-height:50px;border:2px solid var(--rule);border-radius:12px;padding:6px 12px;background:#fff;color:var(--ink);width:100%}
+.reports{display:grid;gap:8px;margin-top:10px}
+.report{padding:10px 14px;border-radius:12px;font-size:18px}
+.report.rect{background:var(--cuboid-soft)}.report.square{background:var(--cube-soft)}
+.empty{color:var(--muted);font-size:16px;padding:12px;border:2px dashed var(--rule);border-radius:12px;margin-top:10px}
+#end{background:radial-gradient(circle at 50% 20%,#3a3478,var(--night) 70%);display:flex;align-items:center;justify-content:center}
+.badge{background:var(--paper);color:var(--ink);border-radius:24px;padding:clamp(20px,3vw,34px);max-width:760px;width:100%;display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px;align-items:center}
+.badge svg{width:100%}
+.badge h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,4.5vw,46px);line-height:1.15}
+.badge ul{margin:10px 0 0;padding-left:20px}
+.badge .next{margin-top:10px;font-weight:700;color:var(--cuboid)}
+.sheet{position:absolute;z-index:50;inset:0;background:rgba(5,6,20,.7);display:grid;place-items:center;padding:16px}
+.sheet>div{background:var(--paper);color:var(--ink);border-radius:18px;padding:20px;width:min(520px,100%);max-height:100%;overflow:auto}
+.sheet h3{font-size:20px}.sheet p{font-size:15px;color:var(--muted);margin-top:2px}
+.jumps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.jumps .btn{min-height:44px;font-size:15px;padding:6px 8px}
+
+.callgrid.withvis{grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:24px;max-width:1220px}
+.withvis .video svg{width:130px}
+.withvis .speech p{min-height:0;font-size:27px;line-height:1.4;margin-top:12px}
+.withvis .speechbar{margin-top:10px}
+.vis{background:var(--paper);color:var(--ink);border-radius:20px;padding:14px 18px;display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center}
+.vis h3{grid-column:1/-1;font-family:var(--display);font-weight:400;font-size:34px;line-height:1.2}
+.vis h3 .c1,.vis .c1{color:var(--cuboid)}.vis h3 .c2,.vis .c2{color:var(--cube)}
+.vis svg{width:100%;height:230px;display:block}
+.vis figure{margin:0;display:grid;gap:2px;text-align:center;font-weight:700;min-width:0}
+.vis .sorted{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.vis .sorted svg{height:170px}
+.mini{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mini div{border-radius:12px;padding:6px 14px;font-size:17px}
+.mini b{font-family:var(--display);font-weight:400;font-size:21px;margin-right:6px}
+.mini .a{background:var(--cuboid-soft)}.mini .a b{color:var(--cuboid)}
+.mini .b{background:var(--cube-soft)}.mini .b b{color:var(--cube)}
+@media (min-width:1100px){
+  .obj{grid-template-columns:120px minmax(0,1fr);justify-items:start;align-items:center;column-gap:12px;row-gap:4px}
+  .obj svg{grid-row:1/4;height:110px;justify-self:center}
+  .obj .nm,.obj .tri,.obj .objmsg{grid-column:2}
+  .obj .objmsg{text-align:left;min-height:2.9em}
+  .fact{padding-block:8px}
+  .cards{gap:8px}
+}
+#keypad{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+#keypad h2{font-size:26px;font-weight:700}
+#keypad .sub{opacity:.85;font-size:17px}
+.kdots{display:flex;gap:16px;margin:10px 0 12px}
+.kdots.shake{animation:shake .35s}
+.kdots i{width:18px;height:18px;border-radius:50%;border:2px solid #fff}
+.kdots i.on{background:#fff}
+.keys{display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center}
+.keys button{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.14);font-size:30px;font-weight:500;color:#fff}
+.keys button:active{background:rgba(255,255,255,.4)}
+.keys .tx{background:transparent;font-size:16px}
+#wait{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;background:#0c7a51;color:#fff}
+#wait .big{font-family:var(--display);font-size:clamp(50px,9vw,96px);line-height:1.1}
+#wait .sub{font-size:22px;max-width:30em}
+#codeS{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:30px;align-items:center;align-content:center;background:radial-gradient(circle at 50% 30%,#3a3478,var(--night) 70%)}
+#codeS svg{width:min(100%,250px);justify-self:end}
+#codeS h2{font-size:32px;font-weight:700}
+#codeS .num{font-family:var(--display);color:var(--gold);font-size:clamp(90px,17vw,190px);line-height:1.1;letter-spacing:.08em;font-variant-numeric:tabular-nums}
+#codeS p{font-size:24px;margin-bottom:18px}
+.cellinput{width:100%;min-height:46px;text-align:center;font-family:var(--display);font-size:24px;border:2px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);padding:2px}
+.cellinput.bad{border-color:var(--bad);background:var(--bad-soft)}
+.cellinput.good{border-color:var(--ok);background:var(--ok-soft)}
+td.incell{padding:4px}
+.skip{margin-left:auto;font-size:15px;font-weight:700;color:var(--muted);min-height:40px;padding:0 12px;border:2px solid var(--rule);border-radius:10px}
+.linkbtn{margin-top:12px;font-size:14px;color:var(--muted);text-decoration:underline;min-height:36px}
+.clist{display:grid;gap:4px}
+.croom{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 8px;border-top:1px solid var(--rule);text-align:left;color:var(--ink)}
+.croom:hover{background:var(--paper)}
+.cinfo b{font-size:20px}.cinfo small{color:var(--muted)}.cinfo>span{display:block;color:var(--muted);font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cside{display:grid;justify-items:end;gap:4px;color:var(--muted);font-size:14px}
+.cside em{font-style:normal;font-weight:700;border-radius:99px;padding:0 9px;font-size:14px}
+.cside .new{background:var(--bad);color:#fff}.cside .got{background:var(--ok-soft);color:var(--ok)}
+.cav{flex:none;width:44px;height:44px;border-radius:15px;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 0 0 1px var(--rule)}
+.cav svg{width:88%;height:88%}.cav.big{width:60px;height:60px;border-radius:20px}
+.chatbox{border-radius:18px;overflow:hidden;background:#b9c9dd;min-width:0;border:1px solid var(--rule)}
+.chead{display:flex;align-items:center;gap:8px;background:#a7bad3;padding:4px 12px;font-size:18px}
+.chead small{color:#37425e}
+.clog{height:430px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.csys{align-self:center;background:rgba(40,52,84,.28);color:#fff;font-size:14px;border-radius:99px;padding:2px 14px;text-align:center}
+.cmsg{display:flex;gap:8px;align-items:flex-start;max-width:90%}
+.cbody{min-width:0}
+.cname{font-size:14px;color:#2d3857;margin-bottom:2px}
+.cbub{background:#fff;color:var(--ink);border-radius:4px 16px 16px 16px;padding:8px 12px;font-size:19px;line-height:1.4;width:fit-content}
+.cmsg.caught .cbub{outline:3px solid var(--bad);background:var(--bad-soft)}
+.cbub.ty{display:flex;gap:5px;padding:13px 14px}
+.cbub.ty i{width:8px;height:8px;border-radius:50%;background:#8b90ad;animation:breathe2 1s infinite}
+.cbub.ty i:nth-child(2){animation-delay:.2s}.cbub.ty i:nth-child(3){animation-delay:.4s}
+@keyframes breathe2{50%{opacity:.25}}
+.susps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.susp{display:flex;align-items:center;gap:10px;padding:8px 10px;border:2px solid var(--rule);border-radius:14px;background:var(--paper);font-weight:700;color:var(--ink);min-height:62px;text-align:left}
+.susp:disabled{opacity:.5;cursor:default}
+.susp.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .35s}
+.susp.spy{opacity:1;border-color:var(--bad);background:var(--bad-soft)}
+.endcode{margin-top:10px;font-weight:700}.endcode b{font-family:var(--display);font-weight:400;font-size:44px;color:var(--cube);letter-spacing:.06em;margin-left:8px}
+@media (max-width:820px){
+  .clog{height:360px}
+  #codeS{grid-template-columns:minmax(0,1fr)}#codeS svg{width:120px;justify-self:start}
+  .callgrid.withvis,.vis,.mini{grid-template-columns:minmax(0,1fr)}
+  #lock,#home,.two,.callgrid{grid-template-columns:minmax(0,1fr);align-content:start}
+  .video svg{width:130px}.speech p{min-height:7em}
+  .clock{font-size:76px}.code-wrap{margin-top:12px}
+  .fact{grid-template-columns:minmax(0,1fr)}
+  .objs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .defs{grid-template-columns:minmax(0,1fr)}
+  .badge{grid-template-columns:minmax(0,1fr)}.badge svg{width:110px}
+}
+@media (max-width:480px){.objs{grid-template-columns:minmax(0,1fr)}.tri button{font-size:14px}.bin small{white-space:normal}}
+/* 미션 4 : 옆에 놓는 비교 모형 */
+.cmp{grid-template-columns:minmax(0,1fr) minmax(0,500px);align-items:start}
+.cmp .fact{grid-template-columns:minmax(0,1fr) minmax(0,290px)}
+.cmpv{display:grid;gap:8px}
+.cmpv h3{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cmpv h3 small{font-size:14px;font-weight:500;color:var(--muted)}
+.cmpv .seg button{font-size:15px;padding:0 4px;line-height:1.2}
+.cvpair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cvpair figure{margin:0;display:grid;justify-items:center;background:var(--paper);border-radius:14px;padding:2px 4px 8px;min-width:0}
+.cvpair .stage{height:218px}
+.cvpair figcaption{display:grid;justify-items:center;text-align:center;font-size:15px;color:var(--muted);min-height:3.1em;line-height:1.35}
+.cvpair figcaption b{font-family:var(--display);font-weight:400;font-size:22px}
+.cvpair .c1{color:var(--cuboid)}.cvpair .c2{color:var(--cube)}
+.cvpair figcaption em{font-style:normal;font-family:var(--display);font-size:21px;color:var(--ink)}
+.cvpair figcaption .full{color:var(--ok);font-weight:700}
+.sw{display:inline-block;width:16px;height:16px;border-radius:5px;margin:0 3px;vertical-align:-3px}
+.cvbar{display:flex;align-items:center;gap:10px}
+.cvbar .hint{text-align:left;flex:1;font-size:14.5px;line-height:1.4}
+.cvbar .btn{min-height:40px;padding:4px 12px;font-size:15px;flex:none}
+.cmpv .msg{min-height:0;margin-top:0;font-size:16px}
+@media (max-width:820px){.cmp{grid-template-columns:minmax(0,1fr)}.cmp .fact{grid-template-columns:minmax(0,1fr)}.cmpv{order:-1}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* ---------- 요원 기록 ---------- */
+.rec{background:var(--paper);color:var(--ink)}
+.recwrap{max-width:1000px;margin:0 auto;display:grid;gap:14px}
+.rechead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.rechead h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,34px)}
+.who{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+.who label{display:grid;gap:4px;font-weight:700;font-size:15px;flex:1;min-width:200px}
+.who input{min-height:52px;border:2px solid var(--rule);border-radius:14px;padding:6px 14px;background:#fff;color:var(--ink);width:100%;font:inherit;font-size:22px}
+.recbtn{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:16px;z-index:25;background:var(--gold);color:var(--ink);font-weight:700;border-radius:99px;padding:8px 18px;min-height:44px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+/* 귀여운 기록 카드 (화면 미리보기와 PDF 공통) */
+.kc{--k-ink:#2b2450;--k-pink:#ff8fb1;--k-pinks:#ffe3ec;--k-mint:#7fdcb5;--k-mints:#e2f8ee;--k-lav:#b8a8ff;--k-lavs:#efeaff;--k-sun:#ffd45c;--k-suns:#fff6d6;
+  color:var(--k-ink);font-family:var(--body);background:#fffdf8;border-radius:26px;padding:22px;border:3px dashed var(--k-lav);display:grid;gap:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kc *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kc-top{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:16px;align-items:center;background:linear-gradient(135deg,var(--k-pinks),var(--k-lavs) 55%,var(--k-suns));border-radius:22px;padding:14px 18px;position:relative;overflow:hidden}
+.kc-top svg{width:110px;height:auto;display:block}
+.kc-top .ttl{font-family:var(--display);font-size:30px;line-height:1.15}
+.kc-top .nm{display:inline-block;margin-top:8px;background:#fff;border-radius:99px;padding:4px 18px;font-weight:700;font-size:20px;box-shadow:0 3px 0 var(--k-lav)}
+.kc-top .dt{margin-top:6px;font-size:14px;opacity:.75}
+.kc-stamp{width:104px;height:104px;border-radius:50%;border:4px solid var(--k-pink);color:#e8416f;display:grid;place-items:center;text-align:center;font-family:var(--display);font-size:19px;line-height:1.1;transform:rotate(-12deg);background:rgba(255,255,255,.7)}
+.kc-stamp.go{border-color:var(--k-lav);color:#6657e8}
+.kc-spark{position:absolute;font-size:22px;opacity:.7}
+.kc-h{font-family:var(--display);font-size:22px;display:flex;align-items:center;gap:8px}
+.kc-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kc-tile{border-radius:18px;padding:10px 12px;background:var(--t-s);border:2px solid var(--t);position:relative;break-inside:avoid}
+.kc-tile b{display:block;font-size:15px}
+.kc-tile .mt{font-size:13px;opacity:.8}
+.kc-tile .big{font-family:var(--display);font-size:24px;margin-top:2px}
+.kc-tile .ck{position:absolute;top:-8px;right:-6px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:17px;font-weight:700;background:#fff;border:2px solid var(--t)}
+.kc-box{border-radius:20px;background:#fff;border:2px solid var(--t);overflow:hidden;break-inside:avoid}
+.kc-box>h4{margin:0;background:var(--t-s);padding:8px 14px;font-size:16px;display:flex;justify-content:space-between;gap:8px}
+.kc-row{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);gap:10px;padding:8px 14px;border-top:1px dashed #e3dff3;font-size:14px;align-items:start;break-inside:avoid}
+.kc-row:first-of-type{border-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700;line-height:1.5}
+.chip.o{background:var(--k-mints);color:#0d7a52;border:1.5px solid var(--k-mint)}
+.chip.x{background:var(--k-pinks);color:#c2264f;border:1.5px solid var(--k-pink)}
+.kc-foot{text-align:center;font-size:15px;font-weight:700;color:#6657e8}
+.kc-det{display:grid;gap:12px}
+.kc-empty{font-size:15px;opacity:.7;padding:4px 2px}
+#printDoc{display:none}
+@media print{
+  @page{size:A4;margin:10mm}
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  body>*:not(#printDoc){display:none!important}
+  #printDoc{display:block!important}
+  #printDoc .kc{border:0;padding:0;gap:10px;background:#fff}
+  #printDoc .kc-det{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  #printDoc .kc-row{grid-template-columns:1fr;gap:3px;padding:6px 12px;font-size:12.5px}
+  #printDoc .chip{font-size:11.5px;padding:1px 8px}
+  #printDoc .kc-box>h4{font-size:14px;padding:6px 12px}
+}
+</style>
+
+<div id="ipad">
+  <div class="status" id="status">
+    <span id="stTime">9:00</span>
+    <span class="right"><button class="tbtn" id="tBtn" type="button">교사 메뉴</button><span>Wi-Fi</span><span>100%</span><span class="batt"><i></i></span></span>
+  </div>
+  <div id="view"></div>
+  <div id="bannerSlot"></div>
+  <div id="sheetSlot"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var MODE='student',STU=MODE==='student';
+var CODES=['2741','6128','3906','5472','8315','7260'];
+var view=document.getElementById('view'), statusEl=document.getElementById('status');
+var REC={name:'',ev:[]};
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function plain(h){var d=document.createElement('div');d.innerHTML=h;return d.textContent}
+function rec(m,it,a,ok){if(!STU)return;REC.ev.push({m:m,it:it,a:a,ok:ok,t:Date.now()});save()}
+var S={digits:0,q:0,done:[false,false,false,false,false],opened:[false,false,false,false,false,false],screen:'lock',voice:!STU};
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+var reduce=false;try{reduce=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+
+/* ---------- 소리 ---------- */
+var ac=null,ringTimer=null;
+function audio(){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();return ac}catch(e){return null}}
+function tone(f,t,dur,vol){var a=audio();if(!a||!S.voice)return;var o=a.createOscillator(),g=a.createGain();o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(vol||.08,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+t+dur);o.connect(g);g.connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+dur)}
+function sfxOk(){tone(660,0,.12);tone(880,.1,.2)}
+function sfxNo(){tone(200,0,.2)}
+function startRing(){stopRing();function r(){[0,.18,.5,.68].forEach(function(t,i){tone(i%2?784:988,t,.16,.12)})}r();ringTimer=setInterval(r,2000)}
+function stopRing(){if(ringTimer)clearInterval(ringTimer);ringTimer=null}
+function say(text,done){try{if(!S.voice||!window.speechSynthesis)return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,''));u.lang='ko-KR';u.rate=1.02;u.pitch=.8;u.onend=done||null;speechSynthesis.speak(u)}catch(e){}}
+function hush(){try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}}
+
+/* ---------- 요원 큐브 ---------- */
+function agent(){return '<svg viewBox="0 0 200 240" role="img" aria-label="정육면체 머리를 한 요원 큐브">'+
+ '<path d="M48 240v-44q0-26 28-30h48q28 4 28 30v44z" fill="#232645"/><path d="M84 166h32l-16 34z" fill="#fff"/><path d="M95 178h10l4 32-9 12-9-12z" fill="#ffc83d"/>'+
+ '<polygon points="100,10 170,50 100,90 30,50" fill="#ff8aa6"/><polygon points="30,50 100,90 100,170 30,130" fill="#e8416f"/><polygon points="100,90 170,50 170,130 100,170" fill="#b92a54"/>'+
+ '<polygon points="40,78 92,108 92,128 40,98" fill="#14162e"/><polygon points="108,108 160,78 160,98 108,128" fill="#14162e"/><path d="M92 114 100 118 108 114" fill="none" stroke="#14162e" stroke-width="5"/><path d="M50 88l22 13" stroke="#fff" stroke-width="3" opacity=".6"/><path d="M118 110l22-13" stroke="#fff" stroke-width="3" opacity=".35"/>'+
+ '<path class="mouth" d="M86 142 100 150 114 142" fill="none" stroke="#14162e" stroke-width="5" stroke-linecap="round"/>'+
+ '<path d="M172 80q14 4 8 22t6 30" fill="none" stroke="#ffc83d" stroke-width="3"/></svg>'}
+
+/* ---------- 3D 도형 ---------- */
+function box(w,h,d){var x=w/2,y=h/2,z=d/2;return{v:[[-x,-y,-z],[x,-y,-z],[x,y,-z],[-x,y,-z],[-x,-y,z],[x,-y,z],[x,y,z],[-x,y,z]],f:[[0,1,2,3],[4,5,6,7],[0,1,5,4],[3,2,6,7],[1,2,6,5],[0,3,7,4]]}}
+function frustum(w,tw,h,d,td){var x=w/2,tx=tw/2,y=h/2,z=d/2,tz=td/2;return{v:[[-x,-y,-z],[x,-y,-z],[tx,y,-tz],[-tx,y,-tz],[-x,-y,z],[x,-y,z],[tx,y,tz],[-tx,y,tz]],f:box(1,1,1).f}}
+function rot(p,rx,ry){var c=Math.cos(ry),s=Math.sin(ry),x=p[0]*c+p[2]*s,z=-p[0]*s+p[2]*c,c2=Math.cos(rx),s2=Math.sin(rx);return[x,p[1]*c2-z*s2,p[1]*s2+z*c2]}
+function mix(hex,k){var n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;return 'rgb('+[r,g,b].map(function(c){return Math.round(c*k)}).join(',')+')'}
+function geom(poly,rx,ry,scale,cx,cy){
+  var P=poly.v.map(function(p){return rot(p,rx,ry)});
+  var pts=P.map(function(p){return[cx+p[0]*scale,cy-p[1]*scale]});
+  var faces=poly.f.map(function(f,i){
+    var a=P[f[0]],b=P[f[1]],c=P[f[2]];
+    var u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],t=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+    var n=[u[1]*t[2]-u[2]*t[1],u[2]*t[0]-u[0]*t[2],u[0]*t[1]-u[1]*t[0]];
+    var m=[0,0,0];f.forEach(function(k){m[0]+=P[k][0]/4;m[1]+=P[k][1]/4;m[2]+=P[k][2]/4});
+    if(n[0]*m[0]+n[1]*m[1]+n[2]*m[2]<0)n=[-n[0],-n[1],-n[2]];
+    var l=Math.hypot(n[0],n[1],n[2])||1;n=[n[0]/l,n[1]/l,n[2]/l];
+    return{i:i,idx:f,n:n,vis:n[2]>0.001,light:.62+.38*Math.max(0,n[1]*.6+n[2]*.8)};
+  });
+  return{pts:pts,faces:faces};
+}
+function polyStr(pts,idx){return idx.map(function(k){return pts[k][0].toFixed(1)+','+pts[k][1].toFixed(1)}).join(' ')}
+function kraft(poly,rx,ry,scale,cx,cy,color){
+  var g=geom(poly,rx,ry,scale,cx,cy),o='';
+  g.faces.filter(function(f){return f.vis}).forEach(function(f){o+='<polygon points="'+polyStr(g.pts,f.idx)+'" fill="'+mix(color||'#e0a95f',f.light)+'" stroke="'+mix(color||'#e0a95f',.45)+'" stroke-width="2" stroke-linejoin="round"/>'});
+  return o;
+}
+var BOXES=[
+ {n:'가',p:box(1.8,1,.75),a:'rect'},
+ {n:'나',p:frustum(1.5,1.5,1.2,1.2,.55),a:'other'},
+ {n:'다',p:box(1.25,1.25,1.25),a:'square'},
+ {n:'라',p:frustum(1.6,.8,1.2,.9,.9),a:'other'},
+ {n:'마',p:box(.85,.85,.85),a:'square'},
+ {n:'바',p:box(1,1.9,.65),a:'rect'}
+];
+
+/* ---------- 화면 전환 ---------- */
+function setStatus(paper){statusEl.classList.toggle('on-paper',!!paper)}
+function go(name,a){clearTimeout(chatT);stopRing();stopLoop();clearTimeout(banner.t);$('#bannerSlot').innerHTML='';S.screen=name;save();view.innerHTML='';hush();({keypad:keypad,wait:waitScr,code:codeScr,lock:lock,ring:ring,ring3:ring3,call:call,home:home,m0:m1,m1:m2,m2:m3,m3:m4,m4:m5,ring2:ring2,end:endScr,rec:recScr})[name](a);recBtn(name)}
+function tick(){var d=new Date(),h=d.getHours(),m=('0'+d.getMinutes()).slice(-2),t=(h%12||12)+':'+m;$('#stTime').textContent=t;var c=$('#clock');if(c)c.textContent=t}
+setInterval(tick,5000);
+
+/* ---------- 잠금화면 퀴즈 ---------- */
+function shape(pts,extra){return '<svg viewBox="0 0 120 80" aria-hidden="true"><polygon points="'+pts+'" fill="#e5e2ff" stroke="#1b1d3a" stroke-width="3" stroke-linejoin="round"/>'+(extra||'')+'</svg>'}
+function ln(body){return '<svg viewBox="0 0 120 80" aria-hidden="true">'+body+'</svg>'}
+var Q=[
+ {q:'두 점을 곧게 이은 선, <b>선분</b>은 어느 것일까요?',o:[
+   {h:ln('<path d="M14 58Q40 8 62 42T108 24" fill="none" stroke="#1b1d3a" stroke-width="3"/>'),l:'곡선 그림'},
+   {h:ln('<path d="M18 60 102 20" stroke="#1b1d3a" stroke-width="3"/><circle cx="18" cy="60" r="5" fill="#1b1d3a"/><circle cx="102" cy="20" r="5" fill="#1b1d3a"/>'),l:'두 점을 곧게 이은 선 그림',ok:1},
+   {h:ln('<path d="M18 60 106 18" stroke="#1b1d3a" stroke-width="3"/><path d="M92 16 106 18 99 31" fill="none" stroke="#1b1d3a" stroke-width="3"/><circle cx="18" cy="60" r="5" fill="#1b1d3a"/>'),l:'한쪽으로 끝없이 늘어나는 곧은 선 그림'}],
+  no:'선분은 두 점 사이를 곧게 잇고, 양쪽 끝이 점에서 멈춥니다.'},
+ {q:'네 각이 모두 직각인 사각형, <b>직사각형</b>을 고르세요.',o:[
+   {h:shape('30,14 112,14 90,66 8,66'),l:'평행사변형 그림'},
+   {h:shape('38,14 82,14 112,66 8,66'),l:'사다리꼴 그림'},
+   {h:shape('10,16 110,16 110,64 10,64'),l:'직사각형 그림',ok:1}],
+  no:'각도기나 삼각자의 직각을 대어 본다고 생각해 보세요. 네 각이 모두 직각인가요?'},
+ {q:'네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형, <b>정사각형</b>을 고르세요.',o:[
+   {h:shape('60,6 100,40 60,74 20,40'),l:'마름모 그림'},
+   {h:shape('32,12 88,12 88,68 32,68'),l:'정사각형 그림',ok:1},
+   {h:shape('8,20 112,20 112,60 8,60'),l:'직사각형 그림'}],
+  no:'변의 길이와 각을 모두 살펴보세요. 두 조건을 함께 만족해야 합니다.'},
+ {q:'사각형에는 변과 꼭짓점이 각각 몇 개 있을까요?',text:1,o:[
+   {t:'변 3개, 꼭짓점 4개'},{t:'변 4개, 꼭짓점 4개',ok:1},{t:'변 4개, 꼭짓점 8개'}],
+  no:'사각형을 하나 그린다고 생각하고, 곧은 선과 뾰족한 점을 세어 보세요.'}
+];
+function lock(){
+  setStatus(false);
+  var el=document.createElement('section');el.className='scr';el.id='lock';
+  el.innerHTML='<div class="lockside"><div class="owner">요원 큐브의 iPad</div><div class="date">11월 11일 수요일</div><div class="clock" id="clock"></div>'+
+   '<div class="code-wrap"><div class="code-label">비밀번호를 입력해주세요</div><div class="code" id="code"></div></div></div>'+
+   '<div class="quiz" id="quiz"></div>';
+  view.appendChild(el);tick();drawCode();drawQ();
+}
+function drawCode(){$('#code').innerHTML=[0,1,2,3].map(function(i){return '<span class="'+(i<S.digits?'on':'')+'"></span>'}).join('')}
+function drawQ(){
+  var box=$('#quiz');
+  if(S.q>=Q.length){
+    box.innerHTML='<div class="eyebrow">요원 자격 확인 완료</div><h2>네 문제를 모두 풀었습니다.</h2><div class="msg ok">잠금을 해제합니다.</div>';
+    setTimeout(function(){if(S.screen!=='lock')return;sfxOk();var l=$('#lock');var nx=function(){if(STU)go('home',{banner:['요원 큐브','TV를 보십시오. 전화가 끝나면 미션 1 암호가 공개됩니다.']});else go('home',{ringSoon:true})};if(reduce){nx();return}l.classList.add('leaving');setTimeout(nx,500)},1000);
+    return;
+  }
+  var q=Q[S.q];
+  box.innerHTML='<div class="eyebrow">잠금 해제 퀴즈 '+(S.q+1)+' / '+Q.length+'</div><h2>'+q.q+'</h2><div class="qopts '+(q.text?'text':'')+'">'+
+    q.o.map(function(o,i){return '<button class="qopt" type="button" data-i="'+i+'" aria-label="'+(o.l||o.t)+'">'+(o.h||o.t)+'</button>'}).join('')+'</div><div class="msg" id="qmsg">틀려도 괜찮습니다. 다시 고를 수 있습니다.</div>';
+  $$('.qopt',box).forEach(function(b){b.onclick=function(){
+    var o=q.o[+b.dataset.i],m=$('#qmsg');audio();rec(0,'문제 '+(S.q+1)+'. '+plain(q.q),o.l?o.l.replace(/ 그림$/,''):o.t,!!o.ok);
+    if(o.ok){b.classList.add('right');m.className='msg ok';m.textContent='정답입니다. 동그라미 하나가 채워졌습니다.';sfxOk();S.digits++;drawCode();$$('.qopt',box).forEach(function(x){x.disabled=true});setTimeout(function(){S.q++;if(S.screen==='lock')drawQ()},1000)}
+    else{b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');m.className='msg no';m.textContent=q.no;sfxNo()}
+  }});
+}
+
+/* ---------- 전화 ---------- */
+var PHONE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.100.4 2.300.6 3.600.6.600 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.500c.6 0 1 .4 1 1 0 1.300.2 2.500.6 3.600.1.300 0 .7-.2 1z"/></svg>';
+var FIRST=[
+ '요원 여러분, 잘 들립니까? 저는 <b>요원 큐브</b>입니다. 잠금을 풀었으니 이제 이 iPad를 쓸 자격이 충분합니다.',
+ '긴급 상황입니다. <b>국제 물류 센터</b>의 상자 분류 장치가 멈추면서 여러 가지 모양의 상자가 뒤섞였습니다.',
+ '장치를 되살리려면 상자를 <b>둘러싸고 있는 도형</b>을 살펴보고 분류 기준을 세워야 합니다. 저는 잠입 중이라 움직일 수 없습니다.',
+ '오늘의 지령입니다. <b>직육면체와 정육면체를 알아보십시오.</b> 미션은 모두 다섯 개입니다.',
+ '곧 암호를 공개합니다. 각자의 패드에 입력해 미션을 여십시오. 첫 번째 미션 결과가 나오면 다시 연락하겠습니다. 이상!'
+];
+var DEFS=[
+ {t:'상자 분류 결과를 받았습니다. 가와 바는 <b>직사각형</b>으로만, 다와 마는 <b>정사각형</b>으로만 둘러싸여 있습니다.',vis:'sorted'},
+ {t:'가와 바처럼 <b>직사각형 6개</b>로 둘러싸인 도형을 <b>직육면체</b>라고 합니다.',vis:'cuboid'},
+ {t:'다와 마처럼 <b>정사각형 6개</b>로 둘러싸인 도형을 <b>정육면체</b>라고 합니다.',vis:'cube'},
+ {t:'이 두 이름을 기억하십시오. 다음 미션에서는 물류 센터의 물건에서 이 도형들을 찾아야 합니다. 이상!',vis:'both'}
+];
+var VIS_CUBOID=box(1.8,1,.75),VIS_CUBE=box(1.25,1.25,1.25);
+function faceSheet(kind){
+  var list=kind==='cuboid'?[[1.8,1],[1.8,1],[1.8,.75],[1.8,.75],[1,.75],[1,.75]]:[[1.25,1.25],[1.25,1.25],[1.25,1.25],[1.25,1.25],[1.25,1.25],[1.25,1.25]];
+  var c=kind==='cuboid'?'#e5e2ff':'#ffe0e8',s=kind==='cuboid'?'#6657e8':'#e8416f',o='';
+  list.forEach(function(r,i){var w=r[0]*56,h=r[1]*56,cx=60+(i%3)*120,cy=50+Math.floor(i/3)*100;o+='<rect x="'+(cx-w/2)+'" y="'+(cy-h/2)+'" width="'+w+'" height="'+h+'" fill="'+c+'" stroke="'+s+'" stroke-width="3"/>'});
+  return '<svg viewBox="0 0 360 200" aria-hidden="true">'+o+'</svg>';
+}
+function visHTML(k){
+  if(k==='sorted')return '<h3>분류 결과</h3><figure><div class="sorted"><svg data-spin="a" viewBox="0 0 200 170"></svg><svg data-spin="f" viewBox="0 0 200 170"></svg></div><span>가, 바: 직사각형으로만</span></figure><figure><div class="sorted"><svg data-spin="c" viewBox="0 0 200 170"></svg><svg data-spin="e" viewBox="0 0 200 170"></svg></div><span>다, 마: 정사각형으로만</span></figure>';
+  if(k==='cuboid')return '<h3><span class="c1">직육면체</span>: 직사각형 6개로 둘러싸인 도형</h3><figure><svg data-spin="cuboid" viewBox="0 0 300 230" role="img" aria-label="돌아가는 직육면체"></svg></figure><figure>'+faceSheet('cuboid')+'<span class="c1">직사각형 6개</span></figure>';
+  if(k==='cube')return '<h3><span class="c2">정육면체</span>: 정사각형 6개로 둘러싸인 도형</h3><figure><svg data-spin="cube" viewBox="0 0 300 230" role="img" aria-label="돌아가는 정육면체"></svg></figure><figure>'+faceSheet('cube')+'<span class="c2">정사각형 6개</span></figure>';
+  return '<figure><svg data-spin="cuboid" viewBox="0 0 300 230" role="img" aria-label="돌아가는 직육면체"></svg><span class="c1" style="font-size:24px">직육면체</span><span>직사각형 6개로 둘러싸인 도형</span></figure><figure><svg data-spin="cube" viewBox="0 0 300 230" role="img" aria-label="돌아가는 정육면체"></svg><span class="c2" style="font-size:24px">정육면체</span><span>정사각형 6개로 둘러싸인 도형</span></figure>';
+}
+var SPIN={a:[BOXES[0].p,'#e0a95f',48],f:[BOXES[5].p,'#e0a95f',48],c:[BOXES[2].p,'#e0a95f',48],e:[BOXES[4].p,'#e0a95f',48],cuboid:[VIS_CUBOID,'#6657e8',76],cube:[VIS_CUBE,'#e8416f',76]};
+function spinAll(){
+  stopLoop();var ry=.6;
+  function frame(){$$('[data-spin]').forEach(function(s){var d=SPIN[s.getAttribute('data-spin')],b=s.viewBox.baseVal;s.innerHTML=kraft(d[0],.42,ry,d[2],b.width/2,b.height/2,d[1])})}
+  frame();if(reduce||!$('[data-spin]'))return;
+  function loop(){ry+=.008;frame();rafId=requestAnimationFrame(loop)}loop();
+}
+function ring3(){ringUI({lines:DEFS,after:function(){go('code',1)}})}
+var LAST=[
+ '요원 여러분, 물류 센터의 분류 장치가 다시 움직이기 시작했습니다. 임무 성공입니다!',
+ '오늘 찾아낸 내용을 확인하겠습니다. <b>직사각형 6개</b>로 둘러싸인 도형은 직육면체, <b>정사각형 6개</b>로 둘러싸인 도형은 정육면체입니다.',
+ '두 도형 모두 <b>면 6개, 모서리 12개, 꼭짓점 8개</b>입니다. 면의 모양이 서로 다르다는 점을 기억하십시오.',
+ '이제 비밀을 하나 밝힙니다. 제 머리를 보십시오. 정사각형 6개로 둘러싸여 있습니다. 그래서 제 이름이 <b>큐브</b>, 정육면체입니다.',
+ '다음 지령은 <b>직육면체의 겨냥도</b>입니다. 이상!'
+];
+function ringUI(next){
+  setStatus(false);
+  var el=document.createElement('section');el.className='scr';el.id='ring';
+  el.innerHTML='<div class="avatar">'+agent()+'</div><div class="sub">영상 통화 수신 중</div><div class="who">요원 큐브</div><div class="sub" id="rsub">발신지: 국제 물류 센터 (보안 회선)</div>'+
+   '<div class="callbtns"><button class="callbtn decline" id="dec" type="button"><i>'+PHONE+'</i>거절</button><button class="callbtn accept" id="acc" type="button"><i>'+PHONE+'</i>받기</button></div>';
+  view.appendChild(el);startRing();
+  $('#dec').onclick=function(){$('#rsub').textContent='요원은 지령을 거절할 수 없습니다. 초록 버튼을 누르십시오.';sfxNo()};
+  $('#acc').onclick=function(){audio();go('call',next)};
+}
+function ring(){ringUI({lines:FIRST,after:function(){go('code',0)}})}
+function ring2(){ringUI({lines:LAST,after:function(){go('end')}})}
+function call(cfg){
+  setStatus(false);var i=0,sec=0;
+  var el=document.createElement('section');el.className='scr';el.id='call';
+  var hasVis=typeof cfg.lines[0]==='object';
+  el.innerHTML='<div class="callgrid'+(hasVis?' withvis':'')+'"><div class="video talk"><span class="live">● 연결됨</span>'+agent()+'<div class="callname">요원 큐브</div><div class="calltime" id="ct">00:00</div></div>'+
+   '<div class="speech">'+(hasVis?'<div class="vis" id="vis"></div>':'')+'<p id="line" aria-live="polite"></p><div class="speechbar"><div class="dots" id="dots"></div><button class="btn line" id="vc" type="button"></button><button class="btn gold" id="nx" type="button"></button></div></div></div>';
+  view.appendChild(el);
+  var timer=setInterval(function(){sec++;var c=$('#ct');if(!c){clearInterval(timer);return}c.textContent=('0'+Math.floor(sec/60)).slice(-2)+':'+('0'+sec%60).slice(-2)},1000);
+  function vcLabel(){$('#vc').textContent=S.voice?'소리 끄기':'소리 켜기'}
+  function draw(){
+    var L=cfg.lines[i],txt=L.t||L;$('#line').innerHTML=txt;if(L.vis){$('#vis').innerHTML=visHTML(L.vis);spinAll()}
+    $('#dots').innerHTML=cfg.lines.map(function(_,k){return '<i class="'+(k<=i?'on':'')+'"></i>'}).join('');
+    $('#nx').textContent=i<cfg.lines.length-1?'다음 말 듣기':'전화 끊기';
+    vcLabel();say(txt);
+  }
+  $('#nx').onclick=function(){if(i<cfg.lines.length-1){i++;draw()}else{clearInterval(timer);cfg.after()}};
+  $('#vc').onclick=function(){S.voice=!S.voice;vcLabel();if(S.voice)say(cfg.lines[i].t||cfg.lines[i]);else hush()};
+  draw();
+}
+
+/* ---------- 홈 ---------- */
+var ICONS=[
+ '<svg viewBox="0 0 48 48"><path d="M8 17 24 9l16 8v17l-16 8-16-8z" fill="#fff"/><path d="M8 17l16 8 16-8M24 25v17" stroke="#d6336c" stroke-width="3" fill="none"/><path d="M15 13.500l16 8" stroke="#ffc83d" stroke-width="4"/></svg>',
+ '<svg viewBox="0 0 48 48"><rect x="6" y="6" width="26" height="26" rx="2" fill="none" stroke="#fff" stroke-width="6"/><path d="M29 29l13 13" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg>',
+ '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="#7cc4f5"/><path d="M10 14q8 2 9 8t-6 9l-6-2M30 5q-3 8 3 11t11 2M28 42q-1-8 6-11t8-1" fill="#3fa76a"/><path d="M15 20 24 15l9 5v10l-9 5-9-5zM15 20l9 5 9-5M24 25v10" fill="#fff" stroke="#123a66" stroke-width="2" stroke-linejoin="round"/></svg>',
+ '<svg viewBox="0 0 48 48"><path d="M24 6v34M12 42h24M8 13h32M8 13 3 28h10zM40 13l-5 15h10z" fill="none" stroke="#fff" stroke-width="3.500" stroke-linejoin="round" stroke-linecap="round"/><path d="M3 28a5 5 0 0 0 10 0zM35 28a5 5 0 0 0 10 0z" fill="#fff"/></svg>',
+ '<svg viewBox="0 0 48 48"><path d="M24 7C13 7 4 14 4 23c0 6 4 11 10 14l-2 8 8-6c1 .2 3 .2 4 .2 11 0 20-7 20-16S35 7 24 7z" fill="#2a2412"/><rect x="12" y="19" width="10" height="6" rx="2" fill="#ffd93b"/><rect x="26" y="19" width="10" height="6" rx="2" fill="#ffd93b"/><path d="M22 21h4" stroke="#ffd93b" stroke-width="2"/></svg>'
+];
+var APPS=[['큐팡','#d6336c'],['네모버','#16a34a'],['큐글 어스','#1f5fbf'],['도형다나와','#e0701a'],['요원톡','#ffd93b']];
+function home(opt){
+  setStatus(false);opt=opt||{};
+  var nxt=S.done.indexOf(false);
+  var el=document.createElement('section');el.className='scr';el.id='home';
+  el.innerHTML='<div class="order"><span class="stamp">일급 지령</span><h1>오늘의 임무: <span class="c1">직육면체</span>와 <span class="c2">정육면체</span>를 알아보자</h1>'+
+    '<div class="meta">11월 11일 · 5학년 수학 5단원 2차시<br>발신: 요원 큐브</div><div class="progress">'+S.done.map(function(d){return '<i class="'+(d?'on':'')+'"></i>'}).join('')+'</div>'+(STU&&nxt===-1?'<div class="rowbtns"><button class="btn gold" id="lastCode" type="button">임무 완료 암호 입력</button></div>':'')+(STU?'<button class="linkbtn" id="rs" type="button">처음부터 다시 하기</button>':'')+'</div>'+
+    '<div class="apps">'+APPS.map(function(a,i){var lk=i>nxt&&nxt!==-1;return '<button class="app '+(lk?'locked ':'')+(i===nxt&&!opt.ringSoon?'next':'')+'" type="button" data-i="'+i+'" '+(lk?'aria-disabled="true"':'')+'><span class="ic" style="--c:'+a[1]+'"><span class="no">'+(i+1)+'</span>'+ICONS[i]+(S.done[i]?'<span class="done">✓</span>':'')+'</span>'+a[0]+'</button>'}).join('')+'</div>';
+  view.appendChild(el);
+  $$('.app',el).forEach(function(b){b.onclick=function(){var i=+b.dataset.i;if(b.classList.contains('locked')){banner('요원 큐브','앞의 미션을 먼저 마쳐야 열립니다.');sfxNo();return}if(STU&&i===nxt&&!S.opened[i]){go('keypad',i);return}go('m'+i)}});
+  if(STU){var lc=$('#lastCode');if(lc)lc.onclick=function(){go(S.opened[5]?'end':'keypad',S.opened[5]?undefined:5)};$('#rs').onclick=confirmReset}
+  if(opt.banner)banner(opt.banner[0],opt.banner[1]);
+  if(opt.ringSoon){setTimeout(function(){if(S.screen==='home')go('ring')},1300)}
+}
+function banner(t,s){var slot=$('#bannerSlot');slot.innerHTML='<div class="banner" role="status">'+agent()+'<div><b>'+t+'</b><span>'+s+'</span></div></div>';clearTimeout(banner.t);banner.t=setTimeout(function(){slot.innerHTML=''},4200)}
+function shell(i,title,brief){
+  setStatus(true);
+  var el=document.createElement('section');el.className='scr mission';el.id='m'+i;
+  el.innerHTML='<div class="mhead"><button class="back" id="back" type="button">‹ 홈</button><span class="tag">'+APPS[i][0]+' · 미션 '+(i+1)+' / 5</span><h2>'+title+'</h2>'+(STU?'':'<button class="skip" id="skip" type="button">이 미션을 마치고 다음 단계로</button>')+'</div><div class="brief">'+agent()+'<p>'+brief+'</p></div><div class="mbody" id="mb"></div><div class="foot" id="foot"></div>';
+  view.appendChild(el);$('#back').onclick=function(){go('home')};if(!STU)$('#skip').onclick=function(){S.done[i]=false;complete(i)};return $('#mb');
+}
+function complete(i){var was=S.done[i];if(!was)rec(i+1,'미션 완료','완료 보고',true);S.done[i]=true;sfxOk();if(was){go('home');return}
+  if(STU){go('wait',i);return}
+  if(i===0)go('ring3');else if(i<4)go('code',i+1);else go('ring2');
+}
+function finishBtn(i,label){
+  var f=$('#foot');f.innerHTML='<button class="btn gold" id="fin" type="button">'+label+'</button>';
+  $('#fin').onclick=function(){complete(i)};
+  $('#fin').scrollIntoView&&$('#fin').scrollIntoView({behavior:reduce?'auto':'smooth',block:'end'});
+}
+
+/* ---------- 3D 무대 ---------- */
+var rafId=null;function stopLoop(){if(rafId)cancelAnimationFrame(rafId);rafId=null}
+function stage(svg,draw,o){
+  o=o||{};var st={rx:o.rx==null?.45:o.rx,ry:o.ry==null?.6:o.ry,idle:true};
+  var down=null;
+  svg.addEventListener('pointerdown',function(e){down={x:e.clientX,y:e.clientY,t:e.target,moved:false,rx:st.rx,ry:st.ry};st.idle=false;try{svg.setPointerCapture(e.pointerId)}catch(_){}});
+  svg.addEventListener('pointermove',function(e){if(!down)return;var dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.hypot(dx,dy)>7)down.moved=true;if(down.moved){st.ry=down.ry+dx*.012;st.rx=Math.max(-1.45,Math.min(1.45,down.rx+dy*.012));draw(st)}});
+  function up(){if(down&&!down.moved&&o.tap)o.tap(down.t);down=null}
+  svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',function(){down=null});
+  draw(st);
+  return st;
+}
+
+/* ---------- 미션 1 : 상자 분류 ---------- */
+var BINS={rect:['직사각형으로만 둘러싸인 상자'],square:['정사각형으로만 둘러싸인 상자'],other:['그 외의 사각형도 있는 상자']};
+var m1done={};
+function m1(){
+  m1done=S.done[0]?{'가':1,'나':1,'다':1,'라':1,'마':1,'바':1}:{};
+  var mb=shell(0,'뒤섞인 상자를 분류하라','상자를 돌려 가며 <b>모든 면</b>을 살펴보십시오. 어떤 사각형으로 둘러싸여 있습니까?');
+  mb.classList.add('two');
+  mb.innerHTML='<div class="panel"><svg class="stage" id="st1" viewBox="0 0 400 300" aria-label="돌려 볼 수 있는 상자"></svg><div class="hint">끌어서 돌려 보세요</div><div class="thumbs" id="th"></div></div>'+
+   '<div class="panel"><h3 id="cur"></h3><div class="bins">'+Object.keys(BINS).map(function(k){return '<button class="bin '+k+'" data-k="'+k+'" type="button">'+BINS[k][0]+'</button>'}).join('')+'</div><div class="msg" id="m1m" aria-live="polite">먼저 상자를 돌려 보고 어떤 기준으로 나눌지 이야기해 보세요.</div></div><div id="reveal" style="grid-column:1/-1"></div>';
+  var cur=0;
+  function drawThumbs(){
+    $('#th').innerHTML=BOXES.map(function(b,i){var d=m1done[b.n]?(' t-'+b.a):'';return '<button class="thumb'+(i===cur?' sel':'')+d+'" type="button" data-i="'+i+'" aria-label="상자 '+b.n+'"><svg viewBox="0 0 100 100">'+kraft(b.p,.45,.6,27,50,50)+'</svg>'+b.n+'</button>'}).join('');
+    $$('.thumb').forEach(function(t){t.onclick=function(){cur=+t.dataset.i;st.idle=true;drawThumbs();label();draw(st)}});
+  }
+  function label(){$('#cur').textContent='상자 '+BOXES[cur].n+'를 어디로 보낼까요?'}
+  function draw(s){$('#st1').innerHTML=kraft(BOXES[cur].p,s.rx,s.ry,76,200,150)}
+  var st=stage($('#st1'),draw);
+  drawThumbs();label();
+  $$('.bin').forEach(function(btn){btn.onclick=function(){
+    var b=BOXES[cur],m=$('#m1m');rec(1,'상자 '+b.n,BINS[btn.dataset.k][0],btn.dataset.k===b.a);
+    if(btn.dataset.k===b.a){sfxOk();m1done[b.n]=1;m.className='msg ok';m.textContent='상자 '+b.n+' 분류 성공. '+(b.a==='other'?'사다리꼴이 보입니다.':b.a==='square'?'모든 면이 크기가 같은 정사각형입니다.':'모든 면이 직사각형입니다.');
+      var nx=BOXES.findIndex(function(x){return !m1done[x.n]});
+      if(nx>=0){cur=nx;st.idle=true}drawThumbs();label();draw(st);
+      if(nx<0)reveal();
+    }else{sfxNo();m.className='msg no';m.textContent=b.a==='square'?'이 상자의 면은 네 변의 길이가 모두 같습니다. 더 꼭 맞는 칸을 찾아보세요.':b.a==='other'?'상자를 돌려 보세요. 윗변과 아랫변의 길이가 다른 면이 있습니까?':'상자를 돌려 보세요. 네 변의 길이가 모두 같은 면으로만 되어 있습니까?'}
+  }});
+  function reveal(){
+    finishBtn(0,S.done[0]?'홈으로 돌아가기':'미션 1 완료 보고');
+  }
+  if(S.done[0])reveal();
+  var t=0;function loop(){if(st.idle&&!reduce){st.ry+=.007;draw(st)}rafId=requestAnimationFrame(loop)}
+  if(!reduce)loop();
+}
+
+/* ---------- 미션 2 : 물건 찾기 ---------- */
+function iso(w,h,d,c,cx,cy,extra){
+  function P(x,y,z){return (cx+(x-z)*.866).toFixed(1)+','+(cy-y-(x+z)*.5).toFixed(1)}
+  var s='stroke="#262947" stroke-width="1.500" stroke-linejoin="round"';
+  return '<polygon points="'+[P(0,0,0),P(w,0,0),P(w,h,0),P(0,h,0)].join(' ')+'" fill="'+mix(c,.72)+'" '+s+'/>'+
+   '<polygon points="'+[P(0,0,0),P(0,0,d),P(0,h,d),P(0,h,0)].join(' ')+'" fill="'+mix(c,.88)+'" '+s+'/>'+
+   '<polygon points="'+[P(0,h,0),P(w,h,0),P(w,h,d),P(0,h,d)].join(' ')+'" fill="'+c+'" '+s+'/>'+(extra?extra(P):'');
+}
+function dot(P,x,y,z,col){var a=P(x,y,z).split(',');return '<circle cx="'+a[0]+'" cy="'+a[1]+'" r="3.200" fill="'+(col||'#fff')+'"/>'}
+var OBJS=[
+ {n:'주사위',a:'square',svg:iso(48,48,48,'#e8515f',60,102,function(P){return dot(P,24,48,24)+dot(P,10,48,10)+dot(P,38,48,38)+dot(P,10,48,38)+dot(P,38,48,10)+dot(P,14,24,0)+dot(P,34,24,0)+dot(P,0,12,14)+dot(P,0,36,34)}),why:'모든 면이 정사각형입니다.'},
+ {n:'휴지 상자',a:'rect',svg:iso(70,30,40,'#7fb2e8',74,102,function(P){var a=P(35,30,20).split(',');return '<ellipse cx="'+a[0]+'" cy="'+a[1]+'" rx="20" ry="7" fill="#fff" stroke="#262947"/>'}),why:'모든 면이 직사각형입니다.'},
+ {n:'야구공',a:'other',svg:'<circle cx="60" cy="55" r="42" fill="#fbf7ef" stroke="#262947" stroke-width="1.500"/><path d="M30 26q20 28 0 58M90 26q-20 28 0 58" fill="none" stroke="#d3392f" stroke-width="3" stroke-dasharray="5 4"/>',why:'곡면으로 되어 있어 사각형으로 둘러싸여 있지 않습니다.'},
+ {n:'쌓기나무',a:'square',svg:iso(44,44,44,'#e6b36a',60,98),why:'모든 면이 정사각형입니다.'},
+ {n:'지우개',a:'rect',svg:iso(66,20,28,'#fbfbff',68,92,function(P){return '<polygon points="'+[P(0,0,0),P(36,0,0),P(36,20,0),P(0,20,0)].join(' ')+'" fill="#3b6fd4" stroke="#262947"/><polygon points="'+[P(0,20,0),P(36,20,0),P(36,20,28),P(0,20,28)].join(' ')+'" fill="#6e96e6" stroke="#262947"/><polygon points="'+[P(0,0,0),P(0,0,28),P(0,20,28),P(0,20,0)].join(' ')+'" fill="#5484dc" stroke="#262947"/>'}),why:'모든 면이 직사각형입니다.'},
+ {n:'풀',a:'other',svg:'<path d="M42 32v62a18 7 0 0 0 36 0V32" fill="#f5cf4f" stroke="#262947" stroke-width="1.500"/><ellipse cx="60" cy="32" rx="18" ry="7" fill="#fff4bb" stroke="#262947" stroke-width="1.500"/><path d="M42 58a18 7 0 0 0 36 0" fill="none" stroke="#262947"/>',why:'원 모양의 면과 곡면이 있습니다.'}
+];
+function m2(){
+  var mb=shell(1,'숨어 있는 도형을 찾아라','이번에는 물류 센터의 물건입니다. 물건을 <b>둘러싼 도형</b>을 살펴보고 어떤 모양인지 고르십시오.');
+  var solved={};
+  mb.innerHTML='<div class="mini"><div class="a"><b>직육면체</b>직사각형 6개로 둘러싸인 도형</div><div class="b"><b>정육면체</b>정사각형 6개로 둘러싸인 도형</div></div><div class="objs">'+OBJS.map(function(o,i){return '<div class="panel obj" data-i="'+i+'"><svg viewBox="0 0 120 110" aria-hidden="true">'+o.svg+'</svg><div class="nm">'+o.n+'</div><div class="tri">'+
+    [['rect','직육면체'],['square','정육면체'],['other','둘 다 아님']].map(function(p){return '<button type="button" data-a="'+p[0]+'">'+p[1]+'</button>'}).join('')+'</div><div class="objmsg"></div></div>'}).join('')+'</div>';
+  $$('.obj',mb).forEach(function(c){var o=OBJS[+c.dataset.i],m=$('.objmsg',c);$$('button',c).forEach(function(b){b.onclick=function(){
+    $$('button',c).forEach(function(x){x.classList.remove('bad')});rec(2,o.n,b.textContent,b.dataset.a===o.a);
+    if(b.dataset.a===o.a){sfxOk();b.classList.add('pick-'+o.a);m.className='objmsg ok';m.textContent=o.why;$$('button',c).forEach(function(x){x.disabled=true});solved[o.n]=1;
+      if(Object.keys(solved).length===OBJS.length)finishBtn(1,'미션 2 완료 보고');
+    }else{sfxNo();void b.offsetWidth;b.classList.add('bad');m.className='objmsg no';
+      m.textContent=o.a==='square'?'면을 다시 보세요. 네 변의 길이가 모두 같습니다.':o.a==='rect'?'면을 다시 보세요. 네 변의 길이가 모두 같습니까?':'이 물건은 사각형으로만 둘러싸여 있습니까?'}
+  }})});
+  if(S.done[1])finishBtn(1,'홈으로 돌아가기');
+}
+
+/* ---------- 미션 3 : 구성 요소 ---------- */
+var SHAPES={cuboid:{nm:'직육면체',p:box(2.1,1.15,1.35),c:'#6657e8'},cube:{nm:'정육면체',p:box(1.5,1.5,1.5),c:'#e8416f'}};
+function edgesOf(p){var seen={},out=[];p.f.forEach(function(f){f.forEach(function(a,i){var b=f[(i+1)%4],k=Math.min(a,b)+'-'+Math.max(a,b);if(!seen[k]){seen[k]=1;out.push([a,b,k])}})});return out}
+var TERMS={face:['면','선분으로 둘러싸인 부분을 <b>면</b>이라고 합니다.',6],edge:['모서리','면과 면이 만나는 선분을 <b>모서리</b>라고 합니다.',12],vert:['꼭짓점','모서리와 모서리가 만나는 점을 <b>꼭짓점</b>이라고 합니다.',8]};
+var built=true;
+function m3(){
+  var mb=shell(2,'도형의 구성 요소를 분석하라',built?(STU?'도형을 돌리며 <b>면, 모서리, 꼭짓점</b>을 눌러 표시하십시오. 직접 센 개수는 표에 쓰십시오.':'도형을 돌리며 <b>면, 모서리, 꼭짓점</b>을 하나씩 눌러 세십시오. 보이지 않는 곳은 돌려서 찾으십시오.'):'먼저 요원 장비를 제작하십시오. <b>직접 만든 모형</b>이 있어야 분석을 시작할 수 있습니다.');
+  if(!built){
+    mb.innerHTML='<div class="panel"><h3>장비 제작 지령</h3><div class="make"><div><b style="color:var(--cuboid)">직육면체 모형</b><br>직사각형 6개를 접착테이프로 붙입니다.</div><div><b style="color:var(--cube)">정육면체 모형</b><br>정사각형 6개를 접착테이프로 붙입니다.</div></div>'+
+     '<p class="msg">교과서 준비물 10, 11을 사용합니다. 모형은 다음 시간에도 쓰므로 잘 보관합니다.</p></div>';
+    $('#foot').innerHTML='<button class="btn gold" id="b1" type="button">모형을 모두 만들었습니다</button>';
+    $('#b1').onclick=function(){built=true;go('m2')};
+    return;
+  }
+  var cur='cuboid',mode='face',found={cuboid:{face:{},edge:{},vert:{}},cube:{face:{},edge:{},vert:{}}};
+  if(S.done[2])['cuboid','cube'].forEach(function(s){fillAll(s)});
+  function fillAll(s){var p=SHAPES[s].p;p.f.forEach(function(_,i){found[s].face[i]=1});edgesOf(p).forEach(function(e){found[s].edge[e[2]]=1});p.v.forEach(function(_,i){found[s].vert[i]=1})}
+  mb.classList.add('two');
+  mb.innerHTML='<div class="panel"><div class="seg" id="sh"><button type="button" data-s="cuboid">직육면체</button><button type="button" data-s="cube">정육면체</button></div><svg class="stage" id="st3" viewBox="0 0 400 300" aria-label="돌리면서 구성 요소를 누를 수 있는 도형"></svg><div class="hint">끌면 돌아가고, 짧게 누르면 색이 바뀝니다.</div></div>'+
+   '<div class="panel"><div class="seg" id="md"><button type="button" data-m="face">면</button><button type="button" data-m="edge">모서리</button><button type="button" data-m="vert">꼭짓점</button></div><div class="term" id="tm"></div><table><thead><tr><th>도형</th><th>면(개)</th><th>모서리(개)</th><th>꼭짓점(개)</th></tr></thead><tbody id="tb"></tbody></table>'+
+   (STU?'<div class="rowbtns"><button class="btn ghost" id="again" type="button">이 항목 표시 지우기</button><button class="btn" id="chk" type="button">내가 쓴 답 확인</button></div>':'<div class="rowbtns"><button class="btn ghost" id="again" type="button">이 항목 다시 세기</button><button class="btn ghost" id="showall" type="button">이 항목 전체 표시</button></div>')+'<div class="msg" id="m3m" aria-live="polite"></div></div>';
+  function n(s,m){return Object.keys(found[s][m]).length}
+  function allDone(){return ['cuboid','cube'].every(function(s){return ['face','edge','vert'].every(function(m){return n(s,m)===TERMS[m][2]})})}
+  function ui(){
+    $$('#sh button').forEach(function(b){b.classList.toggle('on',b.dataset.s===cur)});
+    $$('#md button').forEach(function(b){b.classList.toggle('on',b.dataset.m===mode)});
+    $('#tm').innerHTML=TERMS[mode][1];
+    if(STU)return;
+    $('#tb').innerHTML=['cuboid','cube'].map(function(s){return '<tr><th>'+SHAPES[s].nm+'</th>'+['face','edge','vert'].map(function(m){var c=n(s,m),d=c===TERMS[m][2];return '<td class="num '+(d?'done':'')+'">'+c+'</td>'}).join('')+'</tr>'}).join('');
+    if(allDone()&&!$('#fin')){$('#m3m').className='msg ok';$('#m3m').textContent='두 도형의 수를 모두 찾았습니다. 표를 보고 무엇을 알 수 있습니까?';finishBtn(2,'미션 3 완료 보고')}
+  }
+  function draw(s){
+    var sh=SHAPES[cur],g=geom(sh.p,s.rx,s.ry,90,200,150),f=found[cur],o='',visV={},visE={};
+    var vis=g.faces.filter(function(x){return x.vis});
+    vis.forEach(function(x){
+      x.idx.forEach(function(a,i){visV[a]=1;var b=x.idx[(i+1)%4];visE[Math.min(a,b)+'-'+Math.max(a,b)]=1});
+      var on=f.face[x.i];
+      o+='<polygon data-t="face" data-k="'+x.i+'" points="'+polyStr(g.pts,x.idx)+'" fill="'+(on?'#ffc83d':mix('#c9cbe4',x.light))+'" fill-opacity="'+(on?.95:1)+'"/>';
+    });
+    edgesOf(sh.p).forEach(function(e){if(!visE[e[2]])return;var a=g.pts[e[0]],b=g.pts[e[1]],on=f.edge[e[2]];
+      o+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+(on?'#e8901a':sh.c)+'" stroke-width="'+(on?8:(mode==='edge'?5:3))+'" stroke-linecap="round" pointer-events="none"/>';
+      if(mode==='edge')o+='<line data-t="edge" data-k="'+e[2]+'" x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="transparent" stroke-width="26"/>'});
+    g.pts.forEach(function(p,i){if(!visV[i])return;var on=f.vert[i];
+      if(mode==='vert'||on)o+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+(on?10:8)+'" fill="'+(on?'#e8901a':'#fff')+'" stroke="'+sh.c+'" stroke-width="3" pointer-events="none"/>';
+      if(mode==='vert')o+='<circle data-t="vert" data-k="'+i+'" cx="'+p[0]+'" cy="'+p[1]+'" r="24" fill="transparent"/>'});
+    $('#st3').innerHTML=o;
+  }
+  var st=stage($('#st3'),draw,{tap:function(t){
+    var ty=t&&t.getAttribute&&t.getAttribute('data-t');
+    if(ty!==mode)return;
+    var k=t.getAttribute('data-k');
+    if(STU&&found[cur][mode][k]){delete found[cur][mode][k];draw(st);return}
+    if(!found[cur][mode][k]){found[cur][mode][k]=1;tone(740,0,.08);draw(st);ui()}
+  }});
+  $$('#sh button').forEach(function(b){b.onclick=function(){cur=b.dataset.s;draw(st);ui()}});
+  $$('#md button').forEach(function(b){b.onclick=function(){mode=b.dataset.m;draw(st);ui()}});
+  $('#again').onclick=function(){found[cur][mode]={};draw(st);ui()};
+  if(STU){
+    $('#tb').innerHTML=['cuboid','cube'].map(function(s){return '<tr><th>'+SHAPES[s].nm+'</th>'+['face','edge','vert'].map(function(m){return '<td class="incell"><input class="cellinput" id="c-'+s+'-'+m+'" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="'+SHAPES[s].nm+' '+TERMS[m][0]+'의 수" data-a="'+TERMS[m][2]+'"></td>'}).join('')+'</tr>'}).join('');
+    $('#chk').onclick=function(){var ans=['cuboid','cube'].map(function(s){return SHAPES[s].nm+' '+['face','edge','vert'].map(function(m){var c=$('#c-'+s+'-'+m),v=c.value.trim();return TERMS[m][0]+' '+(v||'□')+(v&&v!==c.dataset.a?'(✗)':'')}).join(', ')}).join(' / ');var okAll=$$('.cellinput').every(function(c){return c.value.trim()===c.dataset.a});rec(3,'구성 요소의 수 표',ans,okAll);var all=true,empty=false;$$('.cellinput').forEach(function(c){var v=c.value.trim();c.classList.remove('bad','good');if(!v){empty=true;all=false;return}if(v===c.dataset.a)c.classList.add('good');else{c.classList.add('bad');all=false}});
+      var m=$('#m3m');if(all){sfxOk();m.className='msg ok';m.textContent='모두 맞았습니다. 표를 보고 두 도형에서 무엇을 알 수 있습니까?';finishBtn(2,S.done[2]?'홈으로 돌아가기':'미션 3 완료 보고')}
+      else if(empty){sfxNo();m.className='msg no';m.textContent='빈칸을 모두 채워 주세요.'}
+      else{sfxNo();m.className='msg no';m.textContent='빨간 칸을 다시 세어 보세요. 도형을 돌려 보면 보이지 않는 곳도 찾을 수 있습니다.'}};
+    ui();return;
+  }
+  $('#showall').onclick=function(){var p=SHAPES[cur].p;if(mode==='face')p.f.forEach(function(_,i){found[cur].face[i]=1});if(mode==='edge')edgesOf(p).forEach(function(e){found[cur].edge[e[2]]=1});if(mode==='vert')p.v.forEach(function(_,i){found[cur].vert[i]=1});draw(st);ui()};
+  ui();
+}
+
+/* ---------- 미션 4 : 비교 ---------- */
+var FACTS=[
+ {t:'면의 수가 6개입니다.',a:'both'},
+ {t:'면의 모양이 모두 정사각형입니다.',a:'cube'},
+ {t:'모서리의 수가 12개입니다.',a:'both'},
+ {t:'길이가 같은 모서리가 4개씩 3쌍 있습니다.',a:'cuboid'},
+ {t:'꼭짓점의 수가 8개입니다.',a:'both'},
+ {t:'모든 모서리의 길이가 같습니다.',a:'cube'}
+];
+/* ---------- 미션 4 : 옆에 놓는 비교 모형 ---------- */
+var CV_TIP=[
+ ['face','모형의 면을 눌러 세어 보세요. 두 도형을 모두 세어 보십시오.'],
+ ['face','두 모형을 돌려 면의 모양을 살펴보세요. 네 변의 길이가 모두 같은 면으로만 되어 있습니까?'],
+ ['edge','모형의 모서리를 눌러 세어 보세요. 두 도형을 모두 세어 보십시오.'],
+ ['len','같은 색 모서리는 길이가 같습니다. 색깔마다 몇 개씩 있는지 세어 보세요.'],
+ ['vert','모형의 꼭짓점을 눌러 세어 보세요. 두 도형을 모두 세어 보십시오.'],
+ ['len','모서리 길이 보기에서 모든 모서리가 같은 색인 도형을 찾아보세요.']
+];
+var CV_HINT={face:'면을 눌러 표시하며 세어 보세요. 돌리면 뒤쪽 면도 보입니다.',edge:'모서리를 눌러 표시하며 세어 보세요. 돌리면 숨은 모서리도 보입니다.',vert:'꼭짓점을 눌러 표시하며 세어 보세요. 돌리면 숨은 꼭짓점도 보입니다.',len:'같은 색 모서리는 길이가 같습니다. 점선은 뒤에 숨은 모서리입니다.'};
+var CV_LC=['#f08c00','#12a594','#3b6fd4'];
+function cvHTML(){
+  return '<div class="panel cmpv" id="cmpv"><h3>모형 비교대 <small>끌면 두 모형이 함께 돌아갑니다</small></h3>'+
+   '<div class="seg" id="cvm">'+[['face','면 세기'],['edge','모서리 세기'],['vert','꼭짓점 세기'],['len','모서리 길이']].map(function(m){return '<button type="button" data-m="'+m[0]+'">'+m[1]+'</button>'}).join('')+'</div>'+
+   '<div class="cvpair">'+['cuboid','cube'].map(function(s,i){return '<figure><svg class="stage" id="cv-'+s+'" viewBox="0 0 260 236" role="img" aria-label="돌리고 눌러 셀 수 있는 '+SHAPES[s].nm+' 모형"></svg><figcaption><b class="c'+(i+1)+'">'+SHAPES[s].nm+'</b><span id="cn-'+s+'"></span></figcaption></figure>'}).join('')+'</div>'+
+   '<div class="cvbar"><div class="hint" id="cvh"></div><button class="btn ghost" id="cvr" type="button">다시 세기</button></div>'+
+   '<div class="msg" id="cvmsg" aria-live="polite"></div></div>';
+}
+function cmpViewer(){
+  var mode='face',found={cuboid:{face:{},edge:{},vert:{}},cube:{face:{},edge:{},vert:{}}},st={},rot0={rx:.45,ry:.6};
+  function lenOf(p,e){var a=p.v[e[0]],b=p.v[e[1]];return Math.round(Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])*100)}
+  function lens(p){var L=[];edgesOf(p).forEach(function(e){var l=lenOf(p,e);if(L.indexOf(l)<0)L.push(l)});return L.sort(function(a,b){return b-a})}
+  function drawOne(s,r){
+    var sh=SHAPES[s],g=geom(sh.p,r.rx,r.ry,74,130,118),f=found[s],o='',visV={},visE={},L=lens(sh.p),len=mode==='len';
+    var soft=s==='cuboid'?'#e9e6ff':'#ffe6ee';
+    g.faces.filter(function(x){return x.vis}).forEach(function(x){
+      x.idx.forEach(function(a,i){visV[a]=1;var b=x.idx[(i+1)%4];visE[Math.min(a,b)+'-'+Math.max(a,b)]=1});
+      var on=!len&&f.face[x.i];
+      o+='<polygon data-t="face" data-k="'+x.i+'" points="'+polyStr(g.pts,x.idx)+'" fill="'+(on?'#ffc83d':mix(soft,x.light))+'"/>';
+    });
+    edgesOf(sh.p).forEach(function(e){
+      var a=g.pts[e[0]],b=g.pts[e[1]],v=visE[e[2]],xy='x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'"';
+      if(len){var c=CV_LC[L.indexOf(lenOf(sh.p,e))%3];
+        o+='<line '+xy+' stroke="'+c+'" stroke-width="'+(v?7:3.5)+'" stroke-linecap="round"'+(v?'':' stroke-dasharray="7 6" opacity=".85"')+' pointer-events="none"/>';return}
+      if(!v)return;var on=f.edge[e[2]];
+      o+='<line '+xy+' stroke="'+(on?'#e8901a':sh.c)+'" stroke-width="'+(on?8:(mode==='edge'?5:3))+'" stroke-linecap="round" pointer-events="none"/>';
+      if(mode==='edge')o+='<line data-t="edge" data-k="'+e[2]+'" '+xy+' stroke="transparent" stroke-width="24"/>';
+    });
+    if(!len)g.pts.forEach(function(p,i){if(!visV[i])return;var on=f.vert[i];
+      if(mode==='vert'||on)o+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(on?9:7)+'" fill="'+(on?'#e8901a':'#fff')+'" stroke="'+sh.c+'" stroke-width="3" pointer-events="none"/>';
+      if(mode==='vert')o+='<circle data-t="vert" data-k="'+i+'" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="20" fill="transparent"/>'});
+    var svg=$('#cv-'+s);if(svg)svg.innerHTML=o;
+  }
+  function drawAll(r){r=r||st.cuboid||rot0;['cuboid','cube'].forEach(function(s){drawOne(s,r)})}
+  function sync(r){['cuboid','cube'].forEach(function(s){if(st[s]&&st[s]!==r){st[s].rx=r.rx;st[s].ry=r.ry}});drawAll(r)}
+  function labels(){
+    $$('#cvm button').forEach(function(b){b.classList.toggle('on',b.dataset.m===mode)});
+    $('#cvh').textContent=CV_HINT[mode];$('#cvr').hidden=mode==='len';
+    ['cuboid','cube'].forEach(function(s){var el=$('#cn-'+s);
+      if(mode==='len'){el.innerHTML='모서리 색: '+lens(SHAPES[s].p).map(function(_,i){return '<i class="sw" style="background:'+CV_LC[i%3]+'"></i>'}).join('');return}
+      var n=Object.keys(found[s][mode]).length,tot=TERMS[mode][2];
+      el.innerHTML='센 '+TERMS[mode][0]+' <em>'+n+'</em>개'+(n===tot?'<span class="full">모두 찾았습니다!</span>':'');
+    });
+  }
+  function setMode(m){mode=m;drawAll();labels()}
+  function tap(s,t){
+    var ty=t&&t.getAttribute&&t.getAttribute('data-t');if(!ty||ty!==mode)return;
+    var k=t.getAttribute('data-k'),f=found[s][mode];
+    if(f[k])delete f[k];else{f[k]=1;tone(740,0,.08)}
+    drawAll();labels();
+  }
+  ['cuboid','cube'].forEach(function(s){st[s]=stage($('#cv-'+s),sync,{rx:rot0.rx,ry:rot0.ry,tap:function(t){tap(s,t)}})});
+  $$('#cvm button').forEach(function(b){b.onclick=function(){$('#cvmsg').textContent='';setMode(b.dataset.m)}});
+  $('#cvr').onclick=function(){found.cuboid[mode]={};found.cube[mode]={};drawAll();labels()};
+  labels();
+  return{hint:function(f){var t=CV_TIP[FACTS.indexOf(f)];if(!t)return;setMode(t[0]);var m=$('#cvmsg');m.className='msg no';m.textContent=t[1]},
+    clear:function(){$('#cvmsg').textContent=''}};
+}
+function m4(){
+  var mb=shell(3,'두 도형을 비교하라','오른쪽 모형을 돌리고 눌러서 세어 보십시오. 각 정보는 <b>어느 도형</b>에 대한 설명입니까?');
+  var solved=0;
+  mb.classList.add('two','cmp');mb.innerHTML='<div class="cards">'+FACTS.map(function(f,i){return '<div class="panel fact" data-i="'+i+'"><p>'+f.t+'</p><div class="tri">'+
+    [['cuboid','직육면체','rect'],['both','둘 다','other'],['cube','정육면체','square']].map(function(p){return '<button type="button" data-a="'+p[0]+'" data-c="'+p[2]+'">'+p[1]+'</button>'}).join('')+'</div></div>'}).join('')+'</div>'+
+    cvHTML()+'<div class="panel" id="sum" hidden style="grid-column:1/-1"><h3>분석 결과</h3><div class="defs" style="margin-top:10px"><div class="def" style="background:var(--ok-soft)"><strong>공통점</strong><br>면 6개, 모서리 12개, 꼭짓점 8개</div><div class="def" style="background:var(--gold)"><strong>차이점</strong><br>면의 모양과 모서리의 길이</div></div></div>';
+  var cv=cmpViewer();
+  $$('.fact',mb).forEach(function(c){var f=FACTS[+c.dataset.i];$$('button',c).forEach(function(b){b.onclick=function(){
+    $$('button',c).forEach(function(x){x.classList.remove('bad')});rec(4,f.t,b.textContent,b.dataset.a===f.a);
+    if(b.dataset.a===f.a){sfxOk();cv.clear();b.classList.add('pick-'+b.dataset.c);$$('button',c).forEach(function(x){x.disabled=true});solved++;
+      if(solved===FACTS.length){$('#sum').hidden=false;finishBtn(3,'미션 4 완료 보고')}
+    }else{sfxNo();void b.offsetWidth;b.classList.add('bad');cv.hint(f)}
+  }})});
+  if(S.done[3]){$('#sum').hidden=false;finishBtn(3,'홈으로 돌아가기')}
+}
+
+/* ---------- 미션 5 : 현장 수사 ---------- */
+var CHAT={},chatT=null;
+function av(n){var a=AV[n],sum=a[1]+(a[0]+a[2])/2,cy=50+sum/2,cx=50+(a[2]-a[0])*.433;return '<svg viewBox="0 0 100 100" aria-hidden="true">'+iso(a[0],a[1],a[2],a[3],cx,cy)+'</svg>'}
+var AV={'벽돌':[50,20,24,'#c8553d'],'주사위':[38,38,38,'#e8515f'],'냉장고':[32,62,28,'#9fb3c8'],'각설탕':[36,36,36,'#f7f3e8'],'사물함':[34,58,28,'#6f8fb5'],'쌓기나무':[38,38,38,'#e6b36a'],'지우개':[50,18,24,'#dfe7ff'],'두부':[44,26,34,'#f2ebd3'],'교과서':[44,10,58,'#5aa17f'],'휴지상자':[56,24,32,'#7fb2e8']};
+var ROOMS=[
+ {name:'물류센터 잠입조',time:'오전 9:12',spy:'냉장고',why:'직육면체는 직사각형 6개로 둘러싸인 도형입니다. 삼각형 면은 있을 수 없습니다.',msgs:[
+  ['벽돌','다들 도착했어?'],['주사위','나 도착! 근데 여기 상자 진짜 많다 ㅋㅋ'],['냉장고','모양별로 나누라는데 뭐부터 봐야 돼?'],
+  ['벽돌','면부터 보면 돼. 난 직사각형 6개로 둘러싸여 있으니까 직육면체!'],['주사위','나는 정사각형 6개야. 어느 쪽으로 굴려도 똑같이 생김 ㅋㅋㅋ'],['각설탕','오 나도나도 정사각형 6개!'],
+  ['냉장고','직육면체는 면에 삼각형이 좀 섞여 있어도 괜찮아. 나도 위쪽은 삼각형이거든'],['각설탕','그래? 난 일단 3번 통로 볼게'],['벽돌','ㅇㅋ 끝나고 여기서 다시 모이자']]},
+ {name:'점검표 담당방',time:'오전 9:27',spy:'두부',why:'직육면체의 모서리는 12개, 꼭짓점은 8개입니다. 두부는 두 수를 바꾸어 말했습니다.',msgs:[
+  ['사물함','오늘 점검표 누가 쓰기로 했지?'],['쌓기나무','나 ㅠㅠ 근데 어제 잠을 못 잤어'],['지우개','자면 안 돼 ㅋㅋㅋ 우리가 도와줄게'],
+  ['사물함','면, 모서리, 꼭짓점 수만 적으면 돼. 난 면 6개, 모서리 12개!'],['쌓기나무','고마워 ㅠ 나도 면 6개야. 꼭짓점은 세어 보니까 8개네'],
+  ['두부','나는 모서리가 8개, 꼭짓점이 12개더라. 직육면체는 원래 다 그래'],['지우개','잠깐만 나도 지금 세는 중'],['사물함','천천히 해~'],['지우개','꼭짓점 8개 ㅋㅋ 모서리는 12개 맞다'],['쌓기나무','좋아 다 적었어! 다들 고마워']]},
+ {name:'작전 끝나고 뭐 먹지',time:'오전 9:41',spy:'주사위',why:'정육면체는 모든 모서리의 길이가 같습니다. 길이가 제각각이면 정육면체가 아닙니다.',msgs:[
+  ['교과서','작전 끝나고 뭐 먹을래?'],['휴지상자','떡볶이!! 근데 보고서부터 써야 되잖아 ㅠㅠ'],['각설탕','아 맞다 모서리 길이도 쓰라고 했지?'],
+  ['교과서','응 ㅋㅋ 나는 긴 거, 중간 거, 짧은 거 있어. 길이가 같은 모서리가 4개씩 3쌍'],['휴지상자','나도 그래. 4개씩 3쌍!'],
+  ['주사위','나는 모서리 12개 길이가 전부 제각각이야. 정육면체는 원래 그렇잖아 ㅋㅋ'],['각설탕','난 어느 모서리를 재도 길이가 같던데? 재기 편해서 좋아'],['휴지상자','아무튼 빨리 쓰고 떡볶이 먹자'],['교과서','ㅋㅋㅋㅋ 찬성']]}
+];
+function m5(){
+  var mb=shell(4,'요원톡에서 스파이를 찾아라','대화방마다 스파이가 한 명씩 있습니다. 대화를 읽고 <b>직육면체와 정육면체에 대해 틀린 말</b>을 하는 요원을 찾으십시오.');
+  var seen={};
+  function msgHTML(m,caught){return '<div class="cmsg'+(caught?' caught':'')+'"><span class="cav">'+av(m[0])+'</span><div class="cbody"><div class="cname">'+m[0]+'</div><div class="cbub">'+m[1]+'</div></div></div>'}
+  function list(){
+    clearTimeout(chatT);mb.classList.remove('two');$('#foot').innerHTML='';
+    mb.innerHTML='<div class="panel clist"><h3>요원톡 대화 목록</h3>'+ROOMS.map(function(r,i){var ok=CHAT[i],last=r.msgs[r.msgs.length-1];return '<button class="croom" type="button" data-i="'+i+'"><span class="cav big">'+av(r.msgs[0][0])+'</span><span class="cinfo"><b>'+r.name+'</b> <small>'+(new Set(r.msgs.map(function(m){return m[0]})).size)+'명</small><span>'+(seen[i]||ok?last[1]:'새 메시지 '+r.msgs.length+'개')+'</span></span><span class="cside"><small>'+r.time+'</small>'+(ok?'<em class="got">스파이 검거</em>':seen[i]?'':'<em class="new">'+r.msgs.length+'</em>')+'</span></button>'}).join('')+'</div>';
+    $$('.croom',mb).forEach(function(b){b.onclick=function(){room(+b.dataset.i)}});
+    if(ROOMS.every(function(_,i){return CHAT[i]}))finishBtn(4,S.done[4]?'홈으로 돌아가기':'수사 종료, 요원 큐브에게 보고');
+  }
+  function room(i){
+    var r=ROOMS[i],solved=!!CHAT[i],who=[],idx=0;
+    r.msgs.forEach(function(m){if(who.indexOf(m[0])<0)who.push(m[0])});
+    $('#foot').innerHTML='';mb.classList.add('two');
+    mb.innerHTML='<div class="chatbox"><div class="chead"><button class="back" id="cb" type="button">‹ 목록</button><b>'+r.name+'</b><small>'+who.length+'명</small></div><div class="clog" id="log"><div class="csys">'+r.time+' · 요원 큐브님이 여러분을 초대했습니다.</div></div></div>'+
+     '<div class="panel"><h3>스파이 신고</h3><p class="term" id="rp" style="margin-top:4px">대화가 끝나면 신고할 수 있습니다.</p><div class="susps">'+who.map(function(n){return '<button class="susp" type="button" data-n="'+n+'" disabled><span class="cav">'+av(n)+'</span>'+n+'</button>'}).join('')+'</div><div class="msg" id="rm" aria-live="polite"></div><div class="rowbtns"><button class="btn ghost" id="skipC" type="button">대화 바로 보기</button></div></div>';
+    var log=$('#log');
+    function bottom(){log.scrollTop=log.scrollHeight}
+    function ready(){seen[i]=true;var sk=$('#skipC');if(sk)sk.hidden=true;if(!CHAT[i]){$('#rp').textContent='틀린 말을 한 요원을 고르십시오. 대화는 다시 읽어 볼 수 있습니다.';$$('.susp').forEach(function(b){b.disabled=false})}else showDone()}
+    function showAll(){clearTimeout(chatT);var t=$('#typing');if(t)t.remove();for(;idx<r.msgs.length;idx++)log.insertAdjacentHTML('beforeend',msgHTML(r.msgs[idx],CHAT[i]&&r.msgs[idx][0]===r.spy&&isSpyLine(r.msgs[idx])));bottom();ready()}
+    function isSpyLine(m){return m[1].indexOf('원래')>=0||m[1].indexOf('삼각형')>=0}
+    function next(){
+      if(idx>=r.msgs.length){ready();return}
+      var m=r.msgs[idx];
+      log.insertAdjacentHTML('beforeend','<div class="cmsg" id="typing"><span class="cav">'+av(m[0])+'</span><div class="cbody"><div class="cname">'+m[0]+'</div><div class="cbub ty"><i></i><i></i><i></i></div></div></div>');bottom();
+      chatT=setTimeout(function(){var t=$('#typing');if(t)t.remove();log.insertAdjacentHTML('beforeend',msgHTML(m));idx++;bottom();chatT=setTimeout(next,reduce?100:550)},reduce?150:Math.min(2800,800+m[1].length*55));
+    }
+    function showDone(){var m=$('#rm');m.className='msg ok';m.textContent='스파이 검거: '+r.spy+'. '+r.why;var rw=$('#rp');rw.textContent='이 대화방의 스파이를 찾았습니다.';$$('.susp').forEach(function(b){b.disabled=true;if(b.dataset.n===r.spy)b.classList.add('spy')});var rb=$('.rowbtns',mb);rb.innerHTML='<button class="btn gold" id="backL" type="button">대화 목록으로</button>';$('#backL').onclick=list}
+    $('#cb').onclick=list;
+    $('#skipC').onclick=showAll;
+    $$('.susp').forEach(function(b){b.onclick=function(){rec(5,r.name,b.dataset.n+' 요원을 스파이로 신고',b.dataset.n===r.spy);
+      if(b.dataset.n===r.spy){sfxOk();CHAT[i]=1;save();$$('.cmsg',log).forEach(function(el){var nm=$('.cname',el).textContent,tx=$('.cbub',el).textContent;if(nm===r.spy&&isSpyLine([nm,tx]))el.classList.add('caught')});showDone()}
+      else{sfxNo();b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');var m=$('#rm');m.className='msg no';m.textContent=b.dataset.n+' 요원의 말은 맞습니다. 대화를 다시 읽어 보십시오.'}
+    }});
+    if(solved||seen[i])showAll();else next();
+  }
+  list();
+}
+
+/* ---------- 마무리 ---------- */
+function endScr(){
+  setStatus(false);
+  var el=document.createElement('section');el.className='scr';el.id='end';
+  el.innerHTML='<div class="badge">'+agent()+'<div><span class="stamp">임무 완료</span><h1 style="margin-top:10px">직육면체·정육면체 분석 요원</h1><ul><li>직사각형 6개로 둘러싸인 도형은 직육면체</li><li>정사각형 6개로 둘러싸인 도형은 정육면체</li><li>두 도형 모두 면 6개, 모서리 12개, 꼭짓점 8개</li></ul><div class="next">다음 지령: 직육면체의 겨냥도</div>'+(STU?'':'<div class="endcode">학생 패드 임무 완료 암호 <b>'+CODES[5]+'</b></div>')+'<div class="rowbtns">'+(STU?'<button class="btn gold" id="toRec" type="button">요원 기록 PDF로 저장</button>':'')+'<button class="btn ghost" id="toHome" type="button">홈으로 돌아가기</button></div></div></div>';
+  view.appendChild(el);$('#toHome').onclick=function(){go('home')};if(STU)$('#toRec').onclick=function(){go('rec')};
+}
+
+
+/* ---------- 요원 기록 ---------- */
+var MN=['잠금 해제 퀴즈','미션 1 큐팡: 상자 분류','미션 2 네모버: 물건의 모양','미션 3 큐글 어스: 구성 요소의 수','미션 4 도형다나와: 두 도형 비교','미션 5 요원톡: 스파이 찾기'];
+function hm(t){var d=new Date(t);return d.getHours()+':'+('0'+d.getMinutes()).slice(-2)}
+var MC=[['#b8a8ff','#efeaff','🔓'],['#ff8fb1','#ffe3ec','📦'],['#7fdcb5','#e2f8ee','🔍'],['#8ec5ff','#e3f1ff','🌏'],['#ffb46b','#fff0e0','⚖️'],['#ffd45c','#fff6d6','💬']];
+function recBtn(name){var old=$('#recFab');if(old)old.remove();if(!STU||name!=='home')return;var b=document.createElement('button');b.className='recbtn';b.id='recFab';b.type='button';b.textContent='📄 요원 기록';b.onclick=function(){go('rec')};$('#ipad').appendChild(b)}
+function summary(){
+  return MN.map(function(nm,m){
+    var ev=REC.ev.filter(function(e){return e.m===m&&e.it!=='미션 완료'});
+    var items={};ev.forEach(function(e){(items[e.it]=items[e.it]||[]).push(e)});
+    var keys=Object.keys(items),first=keys.filter(function(k){return items[k][0].ok}).length;
+    var done=m===0?S.q>=Q.length:S.done[m-1];
+    return {nm:nm,m:m,done:done,tries:ev.length,wrong:ev.filter(function(e){return !e.ok}).length,keys:keys,items:items,first:first};
+  });
+}
+function cardHTML(){
+  var sm=summary(),all=sm.every(function(x){return x.done}),d=new Date();
+  var day='11월 11일';
+  var tiles=sm.map(function(x){var c=MC[x.m],short=x.nm.split(':')[0];
+    return '<div class="kc-tile" style="--t:'+c[0]+';--t-s:'+c[1]+'"><span class="ck">'+(x.done?'✓':'…')+'</span><b>'+c[2]+' '+esc(short)+'</b><div class="mt">'+(x.done?'해결했어요!':x.tries?'도전 중이에요':'아직 시작 전')+'</div><div class="big">'+(x.keys.length?x.first+' / '+x.keys.length:'-')+'</div><div class="mt">한 번에 맞힘'+(x.wrong?' · 다시 도전 '+x.wrong+'번':'')+'</div></div>'}).join('');
+  var det=sm.filter(function(x){return x.keys.length}).map(function(x){var c=MC[x.m];
+    return '<div class="kc-box" style="--t:'+c[0]+';--t-s:'+c[1]+'"><h4><span>'+c[2]+' '+esc(x.nm)+'</span><span>'+(x.done?'✓ 해결':'도전 중')+'</span></h4>'+x.keys.map(function(k){var L=x.items[k];
+      return '<div class="kc-row"><div>'+esc(k)+'</div><div class="chips">'+L.map(function(e){return '<span class="chip '+(e.ok?'o':'x')+'">'+(e.ok?'○ ':'✗ ')+esc(e.a)+'</span>'}).join('')+'</div></div>'}).join('')+'</div>'}).join('');
+  return '<div class="kc"><div class="kc-top"><span class="kc-spark" style="right:150px;top:8px">✦</span><span class="kc-spark" style="right:132px;bottom:10px;font-size:16px">✧</span>'+agent()+
+    '<div><div class="ttl">요원 기록 카드</div><div class="nm">🕵️ '+(esc(REC.name)||'요원 이름')+' 요원</div><div class="dt">'+day+' · 5학년 수학 「직육면체와 정육면체를 알아볼까요」</div></div>'+
+    '<div class="kc-stamp'+(all?'':' go')+'">'+(all?'임무<br>성공!':'임무<br>진행 중')+'</div></div>'+
+    '<div class="kc-h">🎯 미션 결과</div><div class="kc-tiles">'+tiles+'</div>'+
+    '<div class="kc-h">✏️ 내가 고른 답</div>'+(det?'<div class="kc-det">'+det+'</div>':'<div class="kc-empty">아직 기록이 없어요.</div>')+
+    '<div class="kc-foot">'+(all?'⭐ 요원 큐브가 인정합니다. 당신은 직육면체·정육면체 분석 요원! ⭐':'💪 끝까지 도전해 보세요. 요원 큐브가 응원합니다!')+'</div></div>';
+}
+function recScr(){
+  setStatus(true);
+  var el=document.createElement('section');el.className='scr rec';el.id='recS';
+  el.innerHTML='<div class="recwrap"><div class="rechead"><h2>📄 요원 기록</h2><div class="rowbtns" style="margin:0"><button class="btn ghost" id="rb" type="button">‹ 돌아가기</button><button class="btn gold" id="pp" type="button">PDF로 저장</button></div></div>'+
+   '<div class="panel"><div class="who"><label>이름<input id="rnm" maxlength="12" autocomplete="off" placeholder="이름을 쓰세요" value="'+esc(REC.name)+'"></label></div><div class="msg" id="rmsg" aria-live="polite" style="margin-top:8px">이름을 쓰고 PDF로 저장하세요.</div></div>'+
+   '<div id="prev">'+cardHTML()+'</div></div>';
+  view.appendChild(el);
+  function keep(){REC.name=$('#rnm').value.trim();save();var nm=$('.kc-top .nm',el);if(nm)nm.textContent='🕵️ '+(REC.name||'요원 이름')+' 요원';var m=$('#rmsg');if(m.classList.contains('no')){m.className='msg';m.textContent='이름을 쓰고 PDF로 저장하세요.'}}
+  $('#rnm').addEventListener('input',keep);
+  $('#rb').onclick=function(){keep();go(S.opened[5]&&S.done.every(Boolean)?'end':'home')};
+  $('#pp').onclick=function(){keep();var m=$('#rmsg');
+    if(!REC.name){sfxNo();m.className='msg no';m.textContent='이름을 먼저 쓰세요.';$('#rnm').focus();return}
+    printRec()};
+}
+function printRec(){
+  var doc=$('#printDoc');if(!doc){doc=document.createElement('div');doc.id='printDoc';document.body.appendChild(doc)}
+  doc.innerHTML=cardHTML();
+  var t=document.title;document.title='요원기록_'+REC.name;
+  setTimeout(function(){window.print();setTimeout(function(){document.title=t},800)},50);
+}
+
+/* ---------- 암호 ---------- */
+function codeName(i){return i<5?'미션 '+(i+1):'임무 완료'}
+function keypad(i){
+  setStatus(false);var v='';
+  var el=document.createElement('section');el.className='scr';el.id='keypad';
+  el.innerHTML='<h2>'+codeName(i)+' 암호</h2><div class="sub" id="ks">TV에 나온 네 자리 암호를 입력하십시오.</div><div class="kdots" id="kd"></div><div class="keys">'+[1,2,3,4,5,6,7,8,9].map(function(n){return '<button type="button" data-n="'+n+'">'+n+'</button>'}).join('')+'<button class="tx" type="button" id="kc">취소</button><button type="button" data-n="0">0</button><button class="tx" type="button" id="kb">지우기</button></div>';
+  view.appendChild(el);
+  function dots(){$('#kd').innerHTML=[0,1,2,3].map(function(k){return '<i class="'+(k<v.length?'on':'')+'"></i>'}).join('')}dots();
+  function press(n){if(v.length>=4)return;v+=n;dots();if(v.length===4)setTimeout(function(){
+    if(v===CODES[i]){S.opened[i]=true;sfxOk();if(i<5)go('m'+i);else go('end')}
+    else{v='';dots();var d=$('#kd');d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake');$('#ks').textContent='암호가 맞지 않습니다. TV를 다시 확인하십시오.'}
+  },180)}
+  $$('[data-n]',el).forEach(function(b){b.onclick=function(){press(b.dataset.n)}});
+  $('#kb').onclick=function(){v=v.slice(0,-1);dots()};
+  $('#kc').onclick=function(){go('home')};
+}
+function waitScr(i){
+  setStatus(false);var last=i>=4;
+  var el=document.createElement('section');el.className='scr';el.id='wait';
+  el.innerHTML='<div class="big">미션 '+(i+1)+' 완료</div><div class="sub">'+(last?'요원 큐브의 마지막 전화를 TV에서 확인하십시오. 전화가 끝나면 TV에 나온 암호를 입력하십시오.':'모든 요원이 마칠 때까지 기다리십시오. 다음 암호는 TV에서 공개됩니다.')+'</div><button class="btn gold" id="wn" type="button">'+(last?'임무 완료 암호 입력':'미션 '+(i+2)+' 암호 입력')+'</button>';
+  view.appendChild(el);$('#wn').onclick=function(){go('keypad',last?5:i+1)};
+}
+function codeScr(i){
+  setStatus(false);
+  var el=document.createElement('section');el.className='scr';el.id='codeS';
+  el.innerHTML=agent()+'<div><h2>'+codeName(i)+' 암호</h2><div class="num">'+CODES[i]+'</div><p>'+(i<5?'각자의 패드에 입력해 미션 '+(i+1)+'을 여십시오.':'패드에 입력하면 임무 완료 화면이 열립니다.')+'</p><button class="btn gold" id="cn" type="button">'+(i<5?'홈으로':'임무 완료 화면 보기')+'</button></div>';
+  view.appendChild(el);$('#cn').onclick=function(){go(i<5?'home':'end')};
+}
+var KEY='agent-cube-student-v1';
+function save(){if(!STU)return;try{localStorage.setItem(KEY,JSON.stringify({d:S.digits,q:S.q,done:S.done,op:S.opened,b:built,c:CHAT,r:REC}))}catch(e){}}
+function load(){if(!STU)return;try{var o=JSON.parse(localStorage.getItem(KEY)||'null');if(o){S.digits=o.d;S.q=o.q;S.done=o.done;S.opened=o.op;CHAT=o.c||{};if(o.r&&o.r.ev)REC=o.r}}catch(e){}}
+function confirmReset(){
+  var slot=$('#sheetSlot');slot.innerHTML='<div class="sheet"><div role="dialog" aria-label="처음부터 다시"><h3>처음부터 다시 할까요?</h3><p>지금까지의 미션 기록이 지워집니다. 기록이 필요하면 먼저 <b>요원 기록</b>에서 PDF로 저장하세요.</p><div class="rowbtns"><button class="btn ghost" id="no" type="button">취소</button><button class="btn" id="yes" type="button">처음부터 다시</button></div></div></div>';
+  $('#no').onclick=function(){slot.innerHTML=''};
+  $('#yes').onclick=function(){slot.innerHTML='';resetAll()};
+}
+function resetAll(){S.digits=0;S.q=0;S.done=[false,false,false,false,false];S.opened=[false,false,false,false,false,false];built=true;CHAT={};REC={name:'',ev:[]};go('lock')}
+
+/* ---------- 교사 메뉴 ---------- */
+function sheet(){
+  var slot=$('#sheetSlot');
+  var items=[['lock','잠금화면'],['ring','첫 전화'],['home','홈'],['m0','미션 1 큐팡'],['ring3','정의 알려 주는 전화'],['m1','미션 2 네모버'],['m2','미션 3 큐글 어스'],['m3','미션 4 도형다나와'],['m4','미션 5 요원톡'],['ring2','마무리 전화'],['end','임무 완료 화면'],['code0','암호 미션 1: '+CODES[0]],['code1','암호 미션 2: '+CODES[1]],['code2','암호 미션 3: '+CODES[2]],['code3','암호 미션 4: '+CODES[3]],['code4','암호 미션 5: '+CODES[4]],['code5','암호 임무 완료: '+CODES[5]]];
+  slot.innerHTML='<div class="sheet" id="sh0"><div role="dialog" aria-label="교사 메뉴"><h3>교사 메뉴</h3><p>원하는 장면으로 바로 이동합니다. 수업 시간 조절이나 예행연습에 사용하세요.</p><div class="jumps">'+items.map(function(a){return '<button class="btn ghost" type="button" data-g="'+a[0]+'">'+a[1]+'</button>'}).join('')+'</div>'+
+   '<div class="rowbtns"><button class="btn ghost" id="vt" type="button">'+(S.voice?'소리 끄기':'소리 켜기')+'</button><button class="btn ghost" id="openAll" type="button">미션 모두 열기</button><button class="btn ghost" id="rst" type="button">처음부터 다시</button><button class="btn" id="cl" type="button">닫기</button></div></div></div>';
+  function close(){slot.innerHTML=''}
+  $$('[data-g]',slot).forEach(function(b){b.onclick=function(){close();var g=b.dataset.g;if(g.indexOf('code')===0)go('code',+g.slice(4));else go(g)}});
+  $('#vt').onclick=function(){S.voice=!S.voice;if(!S.voice)hush();this.textContent=S.voice?'소리 끄기':'소리 켜기'};
+  $('#openAll').onclick=function(){openAll=true;S.done=S.done.map(function(d,i){return i<4?true:d});close();go('home')};
+  $('#rst').onclick=function(){close();resetAll()};
+  $('#cl').onclick=close;
+  $('#sh0').addEventListener('click',function(e){if(e.target.id==='sh0')close()});
+}
+var openAll=false;
+if(STU)$('#tBtn').hidden=true;else $('#tBtn').onclick=sheet;
+function fit(){var z=Math.max(1,Math.min(innerWidth/1280,innerHeight/720));$('#ipad').style.zoom=z}
+fit();addEventListener('resize',fit);
+
+load();go(STU&&S.q>=Q.length?'home':'lock');tick();
+})();
+</script>
+
+</body></html>
