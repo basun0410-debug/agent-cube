@@ -879,7 +879,7 @@ var ROOMS=[
   ['주사위','나는 모서리 12개 길이가 전부 제각각이야. 정육면체는 원래 그렇잖아 ㅋㅋ'],['각설탕','난 어느 모서리를 재도 길이가 같던데? 재기 편해서 좋아'],['휴지상자','아무튼 빨리 쓰고 떡볶이 먹자'],['교과서','ㅋㅋㅋㅋ 찬성']]}
 ];
 function m5(){
-  var mb=shell(4,'요원톡에서 스파이를 찾아라','대화방마다 스파이가 한 명씩 있습니다. 대화를 읽고 <b>직육면체와 정육면체에 대해 틀린 말</b>을 하는 요원을 찾으십시오.');
+  var mb=shell(4,'요원톡에서 스파이를 찾아라','대화방마다 스파이가 한 명씩 있습니다. 대화를 읽고 <b>직육면체와 정육면체에 대해 틀린 말</b>을 하는 요원을 찾으십시오. 헷갈리면 <b>요원 수첩</b>을 펼쳐 확인해도 좋습니다.');
   var seen={};
   function msgHTML(m,caught){return '<div class="cmsg'+(caught?' caught':'')+'"><span class="cav">'+av(m[0])+'</span><div class="cbody"><div class="cname">'+m[0]+'</div><div class="cbub">'+m[1]+'</div></div></div>'}
   function list(){
