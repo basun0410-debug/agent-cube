@@ -497,7 +497,8 @@ var LAST=[
  '오늘 찾아낸 내용을 확인하겠습니다. <b>직사각형 6개</b>로 둘러싸인 도형은 직육면체, <b>정사각형 6개</b>로 둘러싸인 도형은 정육면체입니다.',
  '두 도형 모두 <b>면 6개, 모서리 12개, 꼭짓점 8개</b>입니다. 면의 모양이 서로 다르다는 점을 기억하십시오.',
  '이제 비밀을 하나 밝힙니다. 제 머리를 보십시오. 정사각형 6개로 둘러싸여 있습니다. 그래서 제 이름이 <b>큐브</b>, 정육면체입니다.',
- '다음 지령은 <b>직육면체의 겨냥도</b>입니다. 이상!'
+ '마지막 지령입니다. 오늘 알아낸 내용을 <b>요원 수첩</b>에 기록하고, <b>요원 단련 학습지</b>로 훈련하십시오.',
+ '그다음 지령은 <b>직육면체의 겨냥도</b>입니다. 이상!'
 ];
 function ringUI(next){
   setStatus(false);
@@ -874,7 +875,7 @@ function m5(){
 function endScr(){
   setStatus(false);
   var el=document.createElement('section');el.className='scr';el.id='end';
-  el.innerHTML='<div class="badge">'+agent()+'<div><span class="stamp">임무 완료</span><h1 style="margin-top:10px">직육면체·정육면체 분석 요원</h1><ul><li>직사각형 6개로 둘러싸인 도형은 직육면체</li><li>정사각형 6개로 둘러싸인 도형은 정육면체</li><li>두 도형 모두 면 6개, 모서리 12개, 꼭짓점 8개</li></ul><div class="next">다음 지령: 직육면체의 겨냥도</div>'+(STU?'':'<div class="endcode">학생 패드 임무 완료 암호 <b>'+CODES[5]+'</b></div>')+'<div class="rowbtns"><button class="btn ghost" id="toHome" type="button">홈으로 돌아가기</button></div></div></div>';
+  el.innerHTML='<div class="badge">'+agent()+'<div><span class="stamp">임무 완료</span><h1 style="margin-top:10px">직육면체·정육면체 분석 요원</h1><ul><li>직사각형 6개로 둘러싸인 도형은 직육면체</li><li>정사각형 6개로 둘러싸인 도형은 정육면체</li><li>두 도형 모두 면 6개, 모서리 12개, 꼭짓점 8개</li></ul><div class="next">지금 할 일: 요원 수첩 기록 → 요원 단련 학습지</div><div class="next" style="margin-top:8px;opacity:.8">다음 지령: 직육면체의 겨냥도</div>'+(STU?'':'<div class="endcode">학생 패드 임무 완료 암호 <b>'+CODES[5]+'</b></div>')+'<div class="rowbtns"><button class="btn ghost" id="toHome" type="button">홈으로 돌아가기</button></div></div></div>';
   view.appendChild(el);$('#toHome').onclick=function(){go('home')};
 }
 
