@@ -403,7 +403,7 @@ var BOXES=[
 
 /* ---------- 화면 전환 ---------- */
 function setStatus(paper){statusEl.classList.toggle('on-paper',!!paper)}
-function go(name,a){clearTimeout(chatT);stopRing();stopLoop();clearTimeout(banner.t);$('#bannerSlot').innerHTML='';S.screen=name;save();view.innerHTML='';hush();({gate:gateScr,keypad:keypad,wait:waitScr,code:codeScr,lock:lock,ring:ring,ring3:ring3,call:call,home:home,m0:m1,m1:m2,m2:m3,m3:m4,m4:m5,ring2:ring2,end:endScr})[name](a)}
+function go(name,a){clearTimeout(chatT);stopRing();stopLoop();clearTimeout(banner.t);$('#bannerSlot').innerHTML='';S.screen=name;save();view.innerHTML='';hush();({gate:function(){keypad(-1)},keypad:keypad,wait:waitScr,code:codeScr,lock:lock,ring:ring,ring3:ring3,call:call,home:home,m0:m1,m1:m2,m2:m3,m3:m4,m4:m5,ring2:ring2,end:endScr})[name](a)}
 function tick(){var d=new Date(),h=d.getHours(),m=('0'+d.getMinutes()).slice(-2),t=(h%12||12)+':'+m;$('#stTime').textContent=t;var c=$('#clock');if(c)c.textContent=t}
 setInterval(tick,5000);
 
@@ -891,7 +891,7 @@ function gateScr(){
 function keypad(i){
   setStatus(false);var v='';
   var el=document.createElement('section');el.className='scr';el.id='keypad';
-  el.innerHTML='<h2>'+codeName(i)+' 암호</h2><div class="sub" id="ks">TV에 나온 네 자리 암호를 입력하십시오.</div><div class="kdots" id="kd"></div><div class="keys">'+[1,2,3,4,5,6,7,8,9].map(function(n){return '<button type="button" data-n="'+n+'">'+n+'</button>'}).join('')+'<button class="tx" type="button" id="kc">취소</button><button type="button" data-n="0">0</button><button class="tx" type="button" id="kb">지우기</button></div>';
+  el.innerHTML=(i<0?'<h2>요원 접속 완료</h2><div class="sub" id="ks">아직 시작하지 마십시오. 선생님의 설명을 먼저 들으십시오.<br>작전 시작 암호는 선생님이 TV에서 공개합니다.</div>':'<h2>'+codeName(i)+' 암호</h2><div class="sub" id="ks">TV에 나온 네 자리 암호를 입력하십시오.</div>')+'<div class="kdots" id="kd"></div><div class="keys">'+[1,2,3,4,5,6,7,8,9].map(function(n){return '<button type="button" data-n="'+n+'">'+n+'</button>'}).join('')+'<button class="tx" type="button" id="kc">취소</button><button type="button" data-n="0">0</button><button class="tx" type="button" id="kb">지우기</button></div>';
   view.appendChild(el);
   function dots(){$('#kd').innerHTML=[0,1,2,3].map(function(k){return '<i class="'+(k<v.length?'on':'')+'"></i>'}).join('')}dots();
   function press(n){if(v.length>=4)return;v+=n;dots();if(v.length===4)setTimeout(function(){
@@ -901,7 +901,7 @@ function keypad(i){
   },180)}
   $$('[data-n]',el).forEach(function(b){b.onclick=function(){press(b.dataset.n)}});
   $('#kb').onclick=function(){v=v.slice(0,-1);dots()};
-  $('#kc').onclick=function(){go(i<0?'gate':'home')};
+  if(i<0)$('#kc').style.visibility='hidden';else $('#kc').onclick=function(){go('home')};
 }
 function waitScr(i){
   setStatus(false);var last=i>=4;
