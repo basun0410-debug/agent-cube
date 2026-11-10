@@ -1051,7 +1051,7 @@ if(STU)$('#tBtn').hidden=true;else $('#tBtn').onclick=sheet;
 function fit(){var z=Math.max(1,Math.min(innerWidth/1280,innerHeight/720));$('#ipad').style.zoom=z}
 fit();addEventListener('resize',fit);
 
-load();go(STU&&!S.started?'gate':STU&&S.q>=Q.length?'home':'lock');tick();
+load();if(STU)go(!S.started?'gate':S.q>=Q.length?'home':'lock');else go('code',-1);tick();
 })();
 </script>
 
