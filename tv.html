@@ -317,7 +317,13 @@ td.incell{padding:4px}
 .cvbar .hint{text-align:left;flex:1;font-size:14.5px;line-height:1.4}
 .cvbar .btn{min-height:40px;padding:4px 12px;font-size:15px;flex:none}
 .cmpv .msg{min-height:0;margin-top:0;font-size:16px}
-@media (max-width:820px){.cmp{grid-template-columns:minmax(0,1fr)}.cmp .fact{grid-template-columns:minmax(0,1fr)}.cmpv{order:-1}}
+.m5{grid-template-columns:minmax(0,1fr) minmax(0,470px);align-items:start}
+.m5.m5room{grid-template-columns:minmax(0,1fr) minmax(0,250px) minmax(0,430px)}
+.m5room .chatbox{align-self:stretch}
+.m5room .susps{grid-template-columns:minmax(0,1fr)}
+.m5 .cvpair .stage{height:176px}
+.m5 .cmpv h3 small{display:none}
+@media (max-width:820px){.m5,.m5.m5room{grid-template-columns:minmax(0,1fr)}.cmp{grid-template-columns:minmax(0,1fr)}.cmp .fact{grid-template-columns:minmax(0,1fr)}.cmpv{order:-1}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 
@@ -823,21 +829,24 @@ var ROOMS=[
   ['주사위','나는 모서리 12개 길이가 전부 제각각이야. 정육면체는 원래 그렇잖아 ㅋㅋ'],['각설탕','난 어느 모서리를 재도 길이가 같던데? 재기 편해서 좋아'],['휴지상자','아무튼 빨리 쓰고 떡볶이 먹자'],['교과서','ㅋㅋㅋㅋ 찬성']]}
 ];
 function m5(){
-  var mb=shell(4,'요원톡에서 스파이를 찾아라','대화방마다 스파이가 한 명씩 있습니다. 대화를 읽고 <b>직육면체와 정육면체에 대해 틀린 말</b>을 하는 요원을 찾으십시오. 헷갈리면 <b>요원 수첩</b>을 펼쳐 확인해도 좋습니다.');
+  var mb=shell(4,'요원톡에서 스파이를 찾아라','대화방마다 스파이가 한 명씩 있습니다. 대화를 읽고 <b>직육면체와 정육면체에 대해 틀린 말</b>을 하는 요원을 찾으십시오. 옆의 <b>모형을 돌리고 세어 보며</b> 확인하고, 요원 수첩도 펼쳐 보십시오.');
+  mb.classList.add('m5');
   var seen={};
   function msgHTML(m,caught){return '<div class="cmsg'+(caught?' caught':'')+'"><span class="cav">'+av(m[0])+'</span><div class="cbody"><div class="cname">'+m[0]+'</div><div class="cbub">'+m[1]+'</div></div></div>'}
   function list(){
-    clearTimeout(chatT);mb.classList.remove('two');$('#foot').innerHTML='';
-    mb.innerHTML='<div class="panel clist"><h3>요원톡 대화 목록</h3>'+ROOMS.map(function(r,i){var ok=CHAT[i],last=r.msgs[r.msgs.length-1];return '<button class="croom" type="button" data-i="'+i+'"><span class="cav big">'+av(r.msgs[0][0])+'</span><span class="cinfo"><b>'+r.name+'</b> <small>'+(new Set(r.msgs.map(function(m){return m[0]})).size)+'명</small><span>'+(seen[i]||ok?last[1]:'새 메시지 '+r.msgs.length+'개')+'</span></span><span class="cside"><small>'+r.time+'</small>'+(ok?'<em class="got">스파이 검거</em>':seen[i]?'':'<em class="new">'+r.msgs.length+'</em>')+'</span></button>'}).join('')+'</div>';
+    clearTimeout(chatT);mb.classList.add('two');mb.classList.remove('m5room');$('#foot').innerHTML='';
+    mb.innerHTML='<div class="panel clist"><h3>요원톡 대화 목록</h3>'+ROOMS.map(function(r,i){var ok=CHAT[i],last=r.msgs[r.msgs.length-1];return '<button class="croom" type="button" data-i="'+i+'"><span class="cav big">'+av(r.msgs[0][0])+'</span><span class="cinfo"><b>'+r.name+'</b> <small>'+(new Set(r.msgs.map(function(m){return m[0]})).size)+'명</small><span>'+(seen[i]||ok?last[1]:'새 메시지 '+r.msgs.length+'개')+'</span></span><span class="cside"><small>'+r.time+'</small>'+(ok?'<em class="got">스파이 검거</em>':seen[i]?'':'<em class="new">'+r.msgs.length+'</em>')+'</span></button>'}).join('')+'</div>'+cvHTML();
+    cmpViewer();
     $$('.croom',mb).forEach(function(b){b.onclick=function(){room(+b.dataset.i)}});
     if(ROOMS.every(function(_,i){return CHAT[i]}))finishBtn(4,S.done[4]?'홈으로 돌아가기':'수사 종료, 요원 큐브에게 보고');
   }
   function room(i){
     var r=ROOMS[i],solved=!!CHAT[i],who=[],idx=0;
     r.msgs.forEach(function(m){if(who.indexOf(m[0])<0)who.push(m[0])});
-    $('#foot').innerHTML='';mb.classList.add('two');
+    $('#foot').innerHTML='';mb.classList.add('two','m5room');
     mb.innerHTML='<div class="chatbox"><div class="chead"><button class="back" id="cb" type="button">‹ 목록</button><b>'+r.name+'</b><small>'+who.length+'명</small></div><div class="clog" id="log"><div class="csys">'+r.time+' · 요원 큐브님이 여러분을 초대했습니다.</div></div></div>'+
-     '<div class="panel"><h3>스파이 신고</h3><p class="term" id="rp" style="margin-top:4px">대화가 끝나면 신고할 수 있습니다.</p><div class="susps">'+who.map(function(n){return '<button class="susp" type="button" data-n="'+n+'" disabled><span class="cav">'+av(n)+'</span>'+n+'</button>'}).join('')+'</div><div class="msg" id="rm" aria-live="polite"></div><div class="rowbtns"><button class="btn ghost" id="skipC" type="button">대화 바로 보기</button></div></div>';
+     '<div class="panel"><h3>스파이 신고</h3><p class="term" id="rp" style="margin-top:4px">대화가 끝나면 신고할 수 있습니다.</p><div class="susps">'+who.map(function(n){return '<button class="susp" type="button" data-n="'+n+'" disabled><span class="cav">'+av(n)+'</span>'+n+'</button>'}).join('')+'</div><div class="msg" id="rm" aria-live="polite"></div><div class="rowbtns"><button class="btn ghost" id="skipC" type="button">대화 바로 보기</button></div></div>'+cvHTML();
+    cmpViewer();
     var log=$('#log');
     function bottom(){log.scrollTop=log.scrollHeight}
     function ready(){seen[i]=true;var sk=$('#skipC');if(sk)sk.hidden=true;if(!CHAT[i]){$('#rp').textContent='틀린 말을 한 요원을 고르십시오. 대화는 다시 읽어 볼 수 있습니다.';$$('.susp').forEach(function(b){b.disabled=false})}else showDone()}
