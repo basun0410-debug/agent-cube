@@ -393,7 +393,7 @@ td.incell{padding:4px}
 (function(){
 "use strict";
 var MODE='student',STU=MODE==='student';
-var CODES=['2741','6128','3906','5472','8315','7260'];
+var CODES=['2741','6128','3906','5472','8315','7260'],START='3150';
 var view=document.getElementById('view'), statusEl=document.getElementById('status');
 var REC={name:'',ev:[]};
 function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -459,7 +459,7 @@ var BOXES=[
 
 /* ---------- 화면 전환 ---------- */
 function setStatus(paper){statusEl.classList.toggle('on-paper',!!paper)}
-function go(name,a){clearTimeout(chatT);stopRing();stopLoop();clearTimeout(banner.t);$('#bannerSlot').innerHTML='';S.screen=name;save();view.innerHTML='';hush();({keypad:keypad,wait:waitScr,code:codeScr,lock:lock,ring:ring,ring3:ring3,call:call,home:home,m0:m1,m1:m2,m2:m3,m3:m4,m4:m5,ring2:ring2,end:endScr,rec:recScr})[name](a);recBtn(name)}
+function go(name,a){clearTimeout(chatT);stopRing();stopLoop();clearTimeout(banner.t);$('#bannerSlot').innerHTML='';S.screen=name;save();view.innerHTML='';hush();({gate:gateScr,keypad:keypad,wait:waitScr,code:codeScr,lock:lock,ring:ring,ring3:ring3,call:call,home:home,m0:m1,m1:m2,m2:m3,m3:m4,m4:m5,ring2:ring2,end:endScr,rec:recScr})[name](a);recBtn(name)}
 function tick(){var d=new Date(),h=d.getHours(),m=('0'+d.getMinutes()).slice(-2),t=(h%12||12)+':'+m;$('#stTime').textContent=t;var c=$('#clock');if(c)c.textContent=t}
 setInterval(tick,5000);
 
@@ -493,6 +493,7 @@ function lock(){
    '<div class="code-wrap"><div class="code-label">비밀번호를 입력해주세요</div><div class="code" id="code"></div></div></div>'+
    '<div class="quiz" id="quiz"></div>';
   view.appendChild(el);tick();drawCode();drawQ();
+  if(!STU){var sb=document.createElement('button');sb.type='button';sb.className='btn gold';sb.id='startCode';sb.textContent='학생 작전 시작 암호 보기';sb.style.cssText='position:fixed;right:24px;bottom:24px;z-index:20';sb.onclick=function(){go('code',-1)};el.appendChild(sb)}
 }
 function drawCode(){$('#code').innerHTML=[0,1,2,3].map(function(i){return '<span class="'+(i<S.digits?'on':'')+'"></span>'}).join('')}
 function drawQ(){
@@ -987,7 +988,13 @@ function printRec(){
 }
 
 /* ---------- 암호 ---------- */
-function codeName(i){return i<5?'미션 '+(i+1):'임무 완료'}
+function codeName(i){return i<0?'작전 시작':i<5?'미션 '+(i+1):'임무 완료'}
+function gateScr(){
+  setStatus(false);
+  var el=document.createElement('section');el.className='scr';el.id='wait';
+  el.innerHTML='<div class="big">요원 접속 완료</div><div class="sub">아직 시작하지 마십시오. 선생님의 설명을 먼저 들으십시오.<br>작전 시작 암호는 선생님이 TV에서 공개합니다.</div><button class="btn gold" id="gn" type="button">작전 시작 암호 입력</button>';
+  view.appendChild(el);$('#gn').onclick=function(){go('keypad',-1)};
+}
 function keypad(i){
   setStatus(false);var v='';
   var el=document.createElement('section');el.className='scr';el.id='keypad';
@@ -995,12 +1002,13 @@ function keypad(i){
   view.appendChild(el);
   function dots(){$('#kd').innerHTML=[0,1,2,3].map(function(k){return '<i class="'+(k<v.length?'on':'')+'"></i>'}).join('')}dots();
   function press(n){if(v.length>=4)return;v+=n;dots();if(v.length===4)setTimeout(function(){
-    if(v===CODES[i]){S.opened[i]=true;sfxOk();if(i<5)go('m'+i);else go('end')}
+    if(i<0&&v===START){S.started=true;sfxOk();go('lock')}
+    else if(i>=0&&v===CODES[i]){S.opened[i]=true;sfxOk();if(i<5)go('m'+i);else go('end')}
     else{v='';dots();var d=$('#kd');d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake');$('#ks').textContent='암호가 맞지 않습니다. TV를 다시 확인하십시오.'}
   },180)}
   $$('[data-n]',el).forEach(function(b){b.onclick=function(){press(b.dataset.n)}});
   $('#kb').onclick=function(){v=v.slice(0,-1);dots()};
-  $('#kc').onclick=function(){go('home')};
+  $('#kc').onclick=function(){go(i<0?'gate':'home')};
 }
 function waitScr(i){
   setStatus(false);var last=i>=4;
@@ -1011,23 +1019,23 @@ function waitScr(i){
 function codeScr(i){
   setStatus(false);
   var el=document.createElement('section');el.className='scr';el.id='codeS';
-  el.innerHTML=agent()+'<div><h2>'+codeName(i)+' 암호</h2><div class="num">'+CODES[i]+'</div><p>'+(i<5?'각자의 패드에 입력해 미션 '+(i+1)+'을 여십시오.':'패드에 입력하면 임무 완료 화면이 열립니다.')+'</p><button class="btn gold" id="cn" type="button">'+(i<5?'홈으로':'임무 완료 화면 보기')+'</button></div>';
-  view.appendChild(el);$('#cn').onclick=function(){go(i<5?'home':'end')};
+  el.innerHTML=agent()+'<div><h2>'+codeName(i)+' 암호</h2><div class="num">'+(i<0?START:CODES[i])+'</div><p>'+(i<0?'각자의 패드에 입력하면 잠금 화면이 열립니다. 함께 풀어 봅시다.':i<5?'각자의 패드에 입력해 미션 '+(i+1)+'을 여십시오.':'패드에 입력하면 임무 완료 화면이 열립니다.')+'</p><button class="btn gold" id="cn" type="button">'+(i<0?'잠금 화면으로':i<5?'홈으로':'임무 완료 화면 보기')+'</button></div>';
+  view.appendChild(el);$('#cn').onclick=function(){go(i<0?'lock':i<5?'home':'end')};
 }
 var KEY='agent-cube-student-v1';
-function save(){if(!STU)return;try{localStorage.setItem(KEY,JSON.stringify({d:S.digits,q:S.q,done:S.done,op:S.opened,b:built,c:CHAT,r:REC}))}catch(e){}}
-function load(){if(!STU)return;try{var o=JSON.parse(localStorage.getItem(KEY)||'null');if(o){S.digits=o.d;S.q=o.q;S.done=o.done;S.opened=o.op;CHAT=o.c||{};if(o.r&&o.r.ev)REC=o.r}}catch(e){}}
+function save(){if(!STU)return;try{localStorage.setItem(KEY,JSON.stringify({s:S.started,d:S.digits,q:S.q,done:S.done,op:S.opened,b:built,c:CHAT,r:REC}))}catch(e){}}
+function load(){if(!STU)return;try{var o=JSON.parse(localStorage.getItem(KEY)||'null');if(o){S.started=!!o.s;S.digits=o.d;S.q=o.q;S.done=o.done;S.opened=o.op;CHAT=o.c||{};if(o.r&&o.r.ev)REC=o.r}}catch(e){}}
 function confirmReset(){
   var slot=$('#sheetSlot');slot.innerHTML='<div class="sheet"><div role="dialog" aria-label="처음부터 다시"><h3>처음부터 다시 할까요?</h3><p>지금까지의 미션 기록이 지워집니다. 기록이 필요하면 먼저 <b>요원 기록</b>에서 PDF로 저장하세요.</p><div class="rowbtns"><button class="btn ghost" id="no" type="button">취소</button><button class="btn" id="yes" type="button">처음부터 다시</button></div></div></div>';
   $('#no').onclick=function(){slot.innerHTML=''};
   $('#yes').onclick=function(){slot.innerHTML='';resetAll()};
 }
-function resetAll(){S.digits=0;S.q=0;S.done=[false,false,false,false,false];S.opened=[false,false,false,false,false,false];built=true;CHAT={};REC={name:'',ev:[]};go('lock')}
+function resetAll(){S.started=false;S.digits=0;S.q=0;S.done=[false,false,false,false,false];S.opened=[false,false,false,false,false,false];built=true;CHAT={};REC={name:'',ev:[]};go(STU?'gate':'lock')}
 
 /* ---------- 교사 메뉴 ---------- */
 function sheet(){
   var slot=$('#sheetSlot');
-  var items=[['lock','잠금화면'],['ring','첫 전화'],['home','홈'],['m0','미션 1 큐팡'],['ring3','정의 알려 주는 전화'],['m1','미션 2 네모버'],['m2','미션 3 큐글 어스'],['m3','미션 4 도형다나와'],['m4','미션 5 요원톡'],['ring2','마무리 전화'],['end','임무 완료 화면'],['code0','암호 미션 1: '+CODES[0]],['code1','암호 미션 2: '+CODES[1]],['code2','암호 미션 3: '+CODES[2]],['code3','암호 미션 4: '+CODES[3]],['code4','암호 미션 5: '+CODES[4]],['code5','암호 임무 완료: '+CODES[5]]];
+  var items=[['code-1','작전 시작 암호: '+START],['lock','잠금화면'],['ring','첫 전화'],['home','홈'],['m0','미션 1 큐팡'],['ring3','정의 알려 주는 전화'],['m1','미션 2 네모버'],['m2','미션 3 큐글 어스'],['m3','미션 4 도형다나와'],['m4','미션 5 요원톡'],['ring2','마무리 전화'],['end','임무 완료 화면'],['code0','암호 미션 1: '+CODES[0]],['code1','암호 미션 2: '+CODES[1]],['code2','암호 미션 3: '+CODES[2]],['code3','암호 미션 4: '+CODES[3]],['code4','암호 미션 5: '+CODES[4]],['code5','암호 임무 완료: '+CODES[5]]];
   slot.innerHTML='<div class="sheet" id="sh0"><div role="dialog" aria-label="교사 메뉴"><h3>교사 메뉴</h3><p>원하는 장면으로 바로 이동합니다. 수업 시간 조절이나 예행연습에 사용하세요.</p><div class="jumps">'+items.map(function(a){return '<button class="btn ghost" type="button" data-g="'+a[0]+'">'+a[1]+'</button>'}).join('')+'</div>'+
    '<div class="rowbtns"><button class="btn ghost" id="vt" type="button">'+(S.voice?'소리 끄기':'소리 켜기')+'</button><button class="btn ghost" id="openAll" type="button">미션 모두 열기</button><button class="btn ghost" id="rst" type="button">처음부터 다시</button><button class="btn" id="cl" type="button">닫기</button></div></div></div>';
   function close(){slot.innerHTML=''}
@@ -1043,7 +1051,7 @@ if(STU)$('#tBtn').hidden=true;else $('#tBtn').onclick=sheet;
 function fit(){var z=Math.max(1,Math.min(innerWidth/1280,innerHeight/720));$('#ipad').style.zoom=z}
 fit();addEventListener('resize',fit);
 
-load();go(STU&&S.q>=Q.length?'home':'lock');tick();
+load();go(STU&&!S.started?'gate':STU&&S.q>=Q.length?'home':'lock');tick();
 })();
 </script>
 
